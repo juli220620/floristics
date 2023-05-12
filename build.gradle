@@ -1,0 +1,23 @@
+plugins {
+    id 'java'
+    id "io.freefair.lombok" version "8.0.1"
+    id "org.springframework.boot" version "3.0.6"
+    id "io.spring.dependency-management" version "1.1.0"
+}
+
+group = 'com.gitlab.juli220620'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'com.mysql:mysql-connector-j:8.0.33'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+test {
+    useJUnitPlatform()
+}
