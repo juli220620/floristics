@@ -15,59 +15,86 @@ public abstract class AutomatedRepo <E, I> implements CrudRepo<E, I> {
 
     protected final ConnectionFactory factory;
 
-    public E save(E entity) {
-        throw new RuntimeException("NIY");
-    }
+    public E save(E entity) { return prepareStatement(saveQuery(), statement -> {
+        setSaveQueryParams(statement, entity);
 
-    public E findById(I id) {
-        try (Connection connection = factory.getConnection();
-             PreparedStatement statement =
-                     connection.prepareStatement(findByIdQuery())) {
+        int count = statement.executeUpdate();
+        if (count == 0) return entity;
 
-            setFindByIdParams(statement, id);
-            ResultSet set = statement.executeQuery();
-            set.next();
-            E entity = convert(set);
-            set.close();
+        ResultSet keys = statement.getGeneratedKeys();
+        if (!keys.next()) return entity;
+        setEntityId(entity, keys);
+        keys.close();
+        return entity;
+    }); }
 
-            return entity;
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+    public E findById(I id) { return prepareStatement(findByIdQuery(), statement -> {
+        setFindByIdParams(statement, id);
+        ResultSet set = statement.executeQuery();
+        set.next();
+        E entity = convert(set);
+        set.close();
+
+        return entity;
+    }); }
+
+    public List<E> getAll() { return prepareStatement(getAllQuery(), statement -> {
+        ResultSet set = statement.executeQuery();
+
+        List<E> list = new ArrayList<>();
+
+        while (set.next()) {
+            list.add(convert(set));
         }
-    }
+        set.close();
 
-    public List<E> getAll() {
-        try (Connection connection = factory.getConnection();
-             PreparedStatement statement =
-                     connection.prepareStatement(getAllQuery())) {
+        return list;
+    }); }
 
-            ResultSet set = statement.executeQuery();
+    public E update(E entity) { return prepareStatement(updateQuery(), statement -> {
+        setUpdateQueryParams(statement, entity);
+        statement.executeUpdate();
+        return entity;
+    }); }
 
-            List<E> list = new ArrayList<>();
+    public boolean delete(E entity) { return prepareStatement(deleteQuery(), statement -> {
+        setDeleteQueryParams(statement, entity);
+        return statement.executeUpdate() > 0;
+    }); }
 
-            while (set.next()) {
-                list.add(convert(set));
-            }
-            set.close();
-
-            return list;
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public E update(E entity) {
-        throw new RuntimeException("NIY");
-    }
-
-    public boolean delete(E entity) {
-        throw new RuntimeException("NIY");
-    }
+    protected abstract void setEntityId(E entity, ResultSet keys) throws SQLException;
 
     protected abstract E convert(ResultSet set) throws SQLException;
 
     protected abstract void setFindByIdParams(PreparedStatement statement, I id) throws SQLException;
 
     protected abstract String findByIdQuery();
+
     protected abstract String getAllQuery();
+
+    protected abstract void setSaveQueryParams(PreparedStatement statement, E entity) throws SQLException;
+
+    protected abstract String saveQuery();
+    protected abstract void setUpdateQueryParams(PreparedStatement statement, E entity) throws SQLException;
+
+    protected abstract String updateQuery();
+
+    protected abstract void setDeleteQueryParams(PreparedStatement statement, E entity) throws SQLException;
+
+    protected abstract String deleteQuery();
+
+    private <E> E prepareStatement(String query, SqlFunction<PreparedStatement, E> function) {
+        try (Connection connection = factory.getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
+
+            return function.apply(statement);
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private interface SqlFunction<T, R> {
+        R apply(T argument) throws SQLException;
+    }
 }
