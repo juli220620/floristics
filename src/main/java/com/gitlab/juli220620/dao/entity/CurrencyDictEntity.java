@@ -9,10 +9,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserRoomEntity {
-
-    private Long id;
-    private Integer area;
+public class CurrencyDictEntity {
+    private String id;
     private String name;
-    private Long userId;
 }

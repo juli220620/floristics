@@ -1,12 +1,15 @@
 package com.gitlab.juli220620.dao.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class RoomFlowerEntity {
@@ -15,6 +18,7 @@ public class RoomFlowerEntity {
     private Integer nutrient;
     private Long growth;
     private LocalDateTime updated;
+    @JsonIgnore
     private UserRoomEntity room;
     private BaseFlowerDictEntity baseFlower;
     private PotDictEntity basePot;

@@ -10,6 +10,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.sql.Statement.RETURN_GENERATED_KEYS;
+
 @RequiredArgsConstructor
 public abstract class AutomatedRepo <E, I> implements CrudRepo<E, I> {
 
@@ -83,9 +85,9 @@ public abstract class AutomatedRepo <E, I> implements CrudRepo<E, I> {
 
     protected abstract String deleteQuery();
 
-    private <E> E prepareStatement(String query, SqlFunction<PreparedStatement, E> function) {
+    protected  <E> E prepareStatement(String query, SqlFunction<PreparedStatement, E> function) {
         try (Connection connection = factory.getConnection();
-             PreparedStatement statement = connection.prepareStatement(query)) {
+             PreparedStatement statement = connection.prepareStatement(query, RETURN_GENERATED_KEYS)) {
 
             return function.apply(statement);
 
@@ -94,7 +96,7 @@ public abstract class AutomatedRepo <E, I> implements CrudRepo<E, I> {
         }
     }
 
-    private interface SqlFunction<T, R> {
+    protected interface SqlFunction<T, R> {
         R apply(T argument) throws SQLException;
     }
 }
