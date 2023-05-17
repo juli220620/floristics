@@ -18,6 +18,7 @@ public class RoomFlowerEntity {
     private Integer nutrient;
     private Long growth;
     private LocalDateTime updated;
+    private String status;
     @JsonIgnore
     private UserRoomEntity room;
     private BaseFlowerDictEntity baseFlower;

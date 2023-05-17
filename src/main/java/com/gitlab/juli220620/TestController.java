@@ -1,6 +1,6 @@
 package com.gitlab.juli220620;
 
-import com.gitlab.juli220620.dao.entity.UserEntity;
+import com.gitlab.juli220620.dao.entity.BaseFlowerDictEntity;
 import com.gitlab.juli220620.dao.repo.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,7 +22,7 @@ public class TestController {
 
     @GetMapping
     public Object test() {
-        List<UserEntity> all = userRepo.getAll();
+        List<BaseFlowerDictEntity> all = flowerRepo.getAll();
         return all;
     }
 

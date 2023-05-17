@@ -17,11 +17,11 @@ public class RoomFlowerRepo extends AutomatedRepo<RoomFlowerEntity, Long> {
     public static final String GET_ALL_QUERY = "select * from room_flower";
     //language=MySQL
     public static final String SAVE_QUERY = "insert into room_flower " +
-            "( room_id, flower_id, pot_id, water, nutrient, growth, updated ) " +
-            "VALUE ( ?, ?, ?, ?, ?, ?, ? )";
+            "( room_id, flower_id, pot_id, water, nutrient, growth, updated, status ) " +
+            "VALUE ( ?, ?, ?, ?, ?, ?, ?, ? )";
     //language=MySQL
     public static final String UPDATE_QUERY = "update room_flower " +
-            "set room_id = ?, flower_id = ?, pot_id = ?, water = ?, nutrient = ?, growth = ?, updated = ? " +
+            "set room_id = ?, flower_id = ?, pot_id = ?, water = ?, nutrient = ?, growth = ?, updated = ?, status = ? " +
             "where id = ?";
     //language=MySQL
     public static final String DELETE_QUERY = "delete from room_flower where id = ?";
@@ -52,6 +52,7 @@ public class RoomFlowerRepo extends AutomatedRepo<RoomFlowerEntity, Long> {
                 set.getInt("nutrient"),
                 set.getLong("growth"),
                 DateUtils.convertToLocalDateTimeViaInstant(set.getTimestamp("updated")),
+                set.getString("status"),
                 roomRepo.findById(set.getLong("room_id")),
                 baseFlowerRepo.findById(set.getString("flower_id")),
                 potRepo.findById(set.getString("pot_id"))
@@ -82,6 +83,7 @@ public class RoomFlowerRepo extends AutomatedRepo<RoomFlowerEntity, Long> {
         statement.setInt(5, entity.getNutrient());
         statement.setLong(6, entity.getGrowth());
         statement.setDate(7, new java.sql.Date(DateUtils.convertToDateViaInstant(entity.getUpdated()).getTime()));
+        statement.setString(8, entity.getStatus());
     }
 
     @Override
@@ -98,7 +100,8 @@ public class RoomFlowerRepo extends AutomatedRepo<RoomFlowerEntity, Long> {
         statement.setInt(5, entity.getNutrient());
         statement.setLong(6, entity.getGrowth());
         statement.setDate(7, new java.sql.Date(DateUtils.convertToDateViaInstant(entity.getUpdated()).getTime()));
-        statement.setLong(8, entity.getId());
+        statement.setString(8, entity.getStatus());
+        statement.setLong(9, entity.getId());
     }
 
     @Override
