@@ -35,6 +35,18 @@ public class UserRepo extends AutomatedRepo<UserEntity, Long> {
         this.roomRepo = roomRepo;
     }
 
+    public UserEntity findByUsername(String username) {
+        return prepareStatement("select * from user where username = ?", statement -> {
+            statement.setString(1, username);
+            ResultSet set = statement.executeQuery();
+
+            if (!set.next()) return null;
+            UserEntity entity = convert(set);
+            set.close();
+            return entity;
+        });
+    }
+
     @Override
     protected void setEntityId(UserEntity entity, ResultSet keys) throws SQLException {
         entity.setId(keys.getLong(1));
