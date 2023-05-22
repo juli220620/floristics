@@ -19,5 +19,6 @@ public class BaseFlowerDictEntity {
     private Integer waterConsumption;
     private Integer nutrientConsumption;
     private Map<String, Integer> harvest;
+    private Integer price;
 
 }

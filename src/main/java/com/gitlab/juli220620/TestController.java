@@ -1,13 +1,13 @@
 package com.gitlab.juli220620;
 
-import com.gitlab.juli220620.dao.entity.BaseFlowerDictEntity;
 import com.gitlab.juli220620.dao.repo.*;
+import com.gitlab.juli220620.utils.AuthUtils;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/test")
@@ -19,11 +19,12 @@ public class TestController {
     private final RoomFlowerRepo roomFlowerRepo;
     private final UserRepo userRepo;
     private final UserRoomRepo userRoomRepo;
+    private final AuthUtils authenticate;
+
 
     @GetMapping
-    public Object test() {
-        List<BaseFlowerDictEntity> all = flowerRepo.getAll();
-        return all;
+    public ResponseEntity<String> testAuthentication(HttpServletRequest rq) {
+        return authenticate.authorized(rq, token -> "Ok");
     }
 
 }

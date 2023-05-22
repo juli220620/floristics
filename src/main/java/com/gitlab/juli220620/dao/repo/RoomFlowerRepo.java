@@ -82,7 +82,7 @@ public class RoomFlowerRepo extends AutomatedRepo<RoomFlowerEntity, Long> {
         statement.setInt(4, entity.getWater());
         statement.setInt(5, entity.getNutrient());
         statement.setLong(6, entity.getGrowth());
-        statement.setDate(7, new java.sql.Date(DateUtils.convertToDateViaInstant(entity.getUpdated()).getTime()));
+        statement.setTimestamp(7, new java.sql.Timestamp(DateUtils.convertToDateViaInstant(entity.getUpdated()).getTime()));
         statement.setString(8, entity.getStatus());
     }
 

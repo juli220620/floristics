@@ -14,4 +14,6 @@ public class PotDictEntity {
     private String id;
     private String name;
     private Integer capacity;
+    private Integer price;
+
 }

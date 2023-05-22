@@ -22,12 +22,12 @@ public class BaseFlowerDictRepo extends AutomatedRepo<BaseFlowerDictEntity, Stri
     public static final String GET_ALL_QUERY = "select * from base_flower_dict";
     //language=MySQL
     public static final String SAVE_QUERY = "insert into base_flower_dict " +
-            "( id, name, growth_time, water_consumption, nutrient_consumption ) " +
-            "value ( ?, ?, ?, ?, ? )";
+            "( id, name, growth_time, water_consumption, nutrient_consumption, price ) " +
+            "value ( ?, ?, ?, ?, ?, ? )";
     //language=MySQL
     public static final String UPDATE_QUERY = "update base_flower_dict " +
             "set name = ?, growth_time = ?, water_consumption = ?, " +
-            "nutrient_consumption = ? where id = ?";
+            "nutrient_consumption = ?, price = ? where id = ?";
     //language=MySQL
     public static final String DELETE_QUERY = "delete from base_flower_dict where id = ?";
 
@@ -58,6 +58,7 @@ public class BaseFlowerDictRepo extends AutomatedRepo<BaseFlowerDictEntity, Stri
         statement.setLong(3, entity.getGrowthTime());
         statement.setInt(4, entity.getWaterConsumption());
         statement.setInt(5, entity.getNutrientConsumption());
+        statement.setInt(6, entity.getPrice());
     }
 
     @Override
@@ -71,7 +72,8 @@ public class BaseFlowerDictRepo extends AutomatedRepo<BaseFlowerDictEntity, Stri
         statement.setLong(2, entity.getGrowthTime());
         statement.setInt(3, entity.getWaterConsumption());
         statement.setInt(4, entity.getNutrientConsumption());
-        statement.setString(5, entity.getId());
+        statement.setInt(5, entity.getPrice());
+        statement.setString(6, entity.getId());
     }
 
     @Override
@@ -110,7 +112,8 @@ public class BaseFlowerDictRepo extends AutomatedRepo<BaseFlowerDictEntity, Stri
                     }
                     harvRes.close();
                     return harvest;
-                })
+                }),
+                set.getInt("price")
         );
     }
 

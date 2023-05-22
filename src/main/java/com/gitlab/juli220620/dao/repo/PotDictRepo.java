@@ -17,9 +17,9 @@ public class PotDictRepo extends AutomatedRepo<PotDictEntity, String> {
     //language=MySQL
     public static final String GET_ALL_QUERY = "select * from pot_dict";
     //language=MySQL
-    public static final String SAVE_QUERY = "insert into pot_dict (id, name, capacity) value ( ?, ?, ? )";
+    public static final String SAVE_QUERY = "insert into pot_dict (id, name, capacity, price) value ( ?, ?, ?, ?)";
     //language=MySQL
-    public static final String UPDATE_QUERY = "update pot_dict set name = ?, capacity = ? where id = ?";
+    public static final String UPDATE_QUERY = "update pot_dict set name = ?, capacity = ?, price = ? where id = ?";
     //language=MySQL
     public static final String DELETE_QUERY = "delete from pot_dict where id = ?";
 
@@ -31,7 +31,8 @@ public class PotDictRepo extends AutomatedRepo<PotDictEntity, String> {
         return new PotDictEntity(
                 set.getString("id"),
                 set.getString("name"),
-                set.getInt("capacity")
+                set.getInt("capacity"),
+                set.getInt("price")
         );
     }
 
@@ -60,6 +61,7 @@ public class PotDictRepo extends AutomatedRepo<PotDictEntity, String> {
         statement.setString(1, entity.getId());
         statement.setString(2, entity.getName());
         statement.setInt(3, entity.getCapacity());
+        statement.setInt(4, entity.getPrice());
     }
 
     @Override
@@ -71,7 +73,8 @@ public class PotDictRepo extends AutomatedRepo<PotDictEntity, String> {
     protected void setUpdateQueryParams(PreparedStatement statement, PotDictEntity entity) throws SQLException {
         statement.setString(1, entity.getName());
         statement.setInt(2, entity.getCapacity());
-        statement.setString(3, entity.getId());
+        statement.setInt(3, entity.getPrice());
+        statement.setString(4, entity.getId());
     }
 
     @Override
