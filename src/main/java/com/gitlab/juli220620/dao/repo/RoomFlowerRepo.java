@@ -53,7 +53,7 @@ public class RoomFlowerRepo extends AutomatedRepo<RoomFlowerEntity, Long> {
                 set.getLong("growth"),
                 DateUtils.convertToLocalDateTimeViaInstant(set.getTimestamp("updated")),
                 set.getString("status"),
-                roomRepo.findById(set.getLong("room_id")),
+                roomRepo.findById(set.getLong("room_id")).orElse(null),
                 baseFlowerRepo.findById(set.getString("flower_id")),
                 potRepo.findById(set.getString("pot_id"))
         );

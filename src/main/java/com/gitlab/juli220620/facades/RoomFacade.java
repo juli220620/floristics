@@ -30,7 +30,7 @@ public class RoomFacade {
                 .orElseThrow(() -> new RuntimeException("No such flower"));
         PotDictEntity pot = Optional.of(potDictRepo.findById(potId))
                 .orElseThrow(() -> new RuntimeException("No such pot"));
-        UserRoomEntity room = Optional.of(roomRepo.findById(roomId))
+        UserRoomEntity room = roomRepo.findById(roomId)
                 .orElseThrow(() -> new RuntimeException("No such room"));
 
         UserEntity user = loginService.findUserByToken(token);

@@ -7,14 +7,15 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.List;
-import java.util.Map;
+
+import static jakarta.persistence.CascadeType.ALL;
 
 @Getter
 @Setter
 @Entity
-@Table(name = "user")
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "user")
 public class UserEntity {
     private String username;
     private String password;
@@ -22,13 +23,9 @@ public class UserEntity {
     @OneToMany(orphanRemoval = true, mappedBy = "user", fetch = FetchType.EAGER)
     private List<UserRoomEntity> userRooms;
 
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "user_currency", joinColumns = {
-            @JoinColumn(name = "user_id", referencedColumnName = "id"),
-    })
-    @MapKeyColumn(name = "currency_id")
-    @Column(name = "amount")
-    private Map<String, Integer> wallet;
+    @OneToMany(orphanRemoval = true, cascade = ALL)
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    private List<UserCurrencyEntity> wallet;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

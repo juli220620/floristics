@@ -14,7 +14,7 @@ public class LoginService {
     private final Map<String, String> tokens = new HashMap<>();
 
     public String authorize(String username, String password) {
-        UserEntity entity = Optional.ofNullable(userRepo.findByUsername(username))
+        UserEntity entity = userRepo.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("Wrong username"));
 
         if (!entity.getPassword().contentEquals(password)) throw new RuntimeException("Wrong password");
@@ -31,7 +31,7 @@ public class LoginService {
 
     public UserEntity findUserByToken(String token) {
         if (!tokens.containsKey(token)) return null;
-        return userRepo.findByUsername(tokens.get(token));
+        return userRepo.findByUsername(tokens.get(token)).orElseThrow();
     }
 
     private String generateToken() {

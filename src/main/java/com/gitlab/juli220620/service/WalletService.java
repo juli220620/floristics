@@ -1,5 +1,7 @@
 package com.gitlab.juli220620.service;
 
+import com.gitlab.juli220620.dao.entity.CurrencyDictEntity;
+import com.gitlab.juli220620.dao.entity.UserCurrencyEntity;
 import com.gitlab.juli220620.dao.entity.UserEntity;
 import com.gitlab.juli220620.dao.repo.UserRepo;
 import lombok.RequiredArgsConstructor;
@@ -12,16 +14,25 @@ public class WalletService {
     private final UserRepo userRepo;
 
     public boolean spend(Integer amount, String currencyId, UserEntity user) {
-        Integer walletAmount = user.getWallet().get(currencyId);
-        if (walletAmount == null || walletAmount < amount) return false;
+        UserCurrencyEntity entity = user.getWallet().stream()
+                .filter(currency -> currency.getCurrencyId().contentEquals(currencyId))
+                .findFirst().orElse(null);
+        if (entity == null || entity.getAmount() == null || entity.getAmount() < amount) return false;
 
-        user.getWallet().put(currencyId, walletAmount - amount);
-        userRepo.update(user);
+        int initialAmount = entity.getAmount();
+        entity.setAmount(initialAmount - amount);
+
+        userRepo.save(user);
         return true;
     }
 
-    public void receive(Integer amount, String currencyId, UserEntity user) {
-        user.getWallet().compute(currencyId, (s, integer) -> integer == null ? amount : integer + amount);
-        userRepo.update(user);
+    public void receive(Integer amount, CurrencyDictEntity currency, UserEntity user) {
+        UserCurrencyEntity entity = user.getWallet().stream()
+                .filter(it -> it.getCurrencyId().contentEquals(currency.getId()))
+                .findFirst().orElse(new UserCurrencyEntity(user.getId(), currency.getId(), 0));
+
+        entity.setAmount(entity.getAmount() + amount);
+        user.getWallet().add(entity);
+        userRepo.save(user);
     }
 }
