@@ -1,4 +1,4 @@
-package com.gitlab.juli220620.web.controllers.login;
+package com.gitlab.juli220620.web.controllers.room;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,8 +9,8 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class PlantFlowerRq {
+public class TendFlowerRq {
 
-    private String baseFlowerId;
-    private String potId;
+    private Integer amount;
+    private Long flowerId;
 }

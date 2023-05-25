@@ -34,6 +34,10 @@ public class LoginService {
         return userRepo.findByUsername(tokens.get(token)).orElseThrow();
     }
 
+    public boolean checkUserToken(String token, UserEntity user) {
+        return user.getUsername().equals(tokens.get(token));
+    }
+
     private String generateToken() {
         return UUID.randomUUID().toString();
     }

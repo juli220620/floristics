@@ -1,4 +1,4 @@
-package com.gitlab.juli220620.web.controllers.login;
+package com.gitlab.juli220620.web.controllers.room;
 
 import com.gitlab.juli220620.facades.RoomFacade;
 import com.gitlab.juli220620.utils.AuthUtils;
@@ -19,6 +19,22 @@ public class RoomController {
     public ResponseEntity<Object> plant(@RequestBody PlantFlowerRq rq, @PathVariable Long roomId, HttpServletRequest http) {
         return authUtils.authorized(http, token -> {
             roomFacade.plantFlower(token, rq.getBaseFlowerId(), rq.getPotId(), roomId);
+            return null;
+        });
+    }
+
+    @PostMapping("/water")
+    public ResponseEntity<Object> water(@RequestBody TendFlowerRq rq, @PathVariable Long roomId, HttpServletRequest http) {
+        return authUtils.authorized(http, token -> {
+            roomFacade.waterFlower(token, rq.getFlowerId(), rq.getAmount());
+            return null;
+        });
+    }
+
+    @PostMapping("/feed")
+    public ResponseEntity<Object> feed(@RequestBody TendFlowerRq rq, @PathVariable Long roomId, HttpServletRequest http) {
+        return authUtils.authorized(http, token -> {
+            roomFacade.feedFlower(token, rq.getFlowerId(), rq.getAmount());
             return null;
         });
     }

@@ -10,15 +10,17 @@ import java.util.function.Consumer;
 @Service
 @RequiredArgsConstructor
 public class TendingService {
+    public static final Integer NUTRIENT_UNIT_COST = 1;
+    public static final Integer WATER_UNIT_COST = 1;
 
     private final RoomFlowerRepo flowerRepo;
 
     public Integer water(Integer amount, RoomFlowerEntity flower) {
-        return add(amount, flower, flower::setWater);
+        return add(amount, flower, actualAmount -> flower.setWater(flower.getWater() + actualAmount));
     }
 
     public Integer feed(Integer amount, RoomFlowerEntity flower) {
-        return add(amount, flower, flower::setNutrient);
+        return add(amount, flower, actualAmount -> flower.setNutrient(flower.getNutrient() + actualAmount));
     }
 
     private Integer add(Integer amount, RoomFlowerEntity flower, Consumer<Integer> valueSettingStrategy) {
@@ -26,7 +28,7 @@ public class TendingService {
         int actualAmount = Math.min(emptySpace, amount);
 
         valueSettingStrategy.accept(actualAmount);
-        flowerRepo.update(flower);
+        flowerRepo.save(flower);
 
         return actualAmount;
     }

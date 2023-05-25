@@ -44,7 +44,7 @@ public class SimulationService {
         flower.setGrowth(currentGrowth);
         flower.setUpdated(updateTime);
 
-        return flowerRepo.update(flower);
+        return flowerRepo.save(flower);
     }
 
     private void checkDeathConditions(RoomFlowerEntity flower,

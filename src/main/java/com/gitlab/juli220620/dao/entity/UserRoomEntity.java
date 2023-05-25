@@ -6,6 +6,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import static jakarta.persistence.CascadeType.*;
+import static jakarta.persistence.FetchType.LAZY;
+
 @Getter
 @Setter
 @Entity
@@ -21,7 +24,7 @@ public class UserRoomEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(optional = false, fetch = LAZY, cascade = { DETACH, MERGE, REFRESH })
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private UserEntity user;
 }
