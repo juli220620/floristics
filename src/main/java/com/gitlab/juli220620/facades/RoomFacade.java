@@ -5,14 +5,14 @@ import com.gitlab.juli220620.dao.entity.UserEntity;
 import com.gitlab.juli220620.dao.entity.UserRoomEntity;
 import com.gitlab.juli220620.dao.repo.RoomFlowerRepo;
 import com.gitlab.juli220620.dao.repo.UserRoomRepo;
-import com.gitlab.juli220620.service.LoginService;
-import com.gitlab.juli220620.service.PlantingService;
-import com.gitlab.juli220620.service.TendingService;
-import com.gitlab.juli220620.service.WalletService;
+import com.gitlab.juli220620.service.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
 
@@ -28,6 +28,8 @@ public class RoomFacade {
     private final WalletService walletService;
     private final LoginService loginService;
     private final TendingService tendingService;
+    private final HarvestService harvestService;
+    private final SimulationService simulationService;
 
     private final UserRoomRepo roomRepo;
     private final RoomFlowerRepo roomFlowerRepo;
@@ -58,6 +60,31 @@ public class RoomFacade {
     @Transactional
     public void waterFlower(String token, Long flowerId, Integer amount) {
         tendFlower(token, flowerId, WATER_UNIT_COST, BLUE_ID, entity -> tendingService.water(amount, entity));
+    }
+
+    @Transactional
+    public void harvestFlower(String token, Long flowerId) {
+        RoomFlowerEntity entity = roomFlowerRepo.findById(flowerId)
+                .orElseThrow(() -> new RuntimeException("Invalid flower"));
+
+        if (!loginService.checkUserToken(token, entity.getRoom().getUser()))
+            throw new RuntimeException("Wrong flower");
+
+        Map<String, Integer> harvest = harvestService.harvest(entity);
+
+        harvest.forEach((currencyId, amount) ->
+                walletService.receive(amount, currencyId, entity.getRoom().getUser()));
+    }
+
+    public UserRoomEntity updateRoom(Long roomId, String token, LocalDateTime update) {
+        UserRoomEntity room = roomRepo.findById(roomId).orElseThrow(() -> new RuntimeException("Invalid room"));
+
+        if (!loginService.checkUserToken(token, room.getUser()))
+            throw new RuntimeException("That's not your room");
+
+        new ArrayList<>(room.getFlowers()).forEach(it -> simulationService.update(it, update));
+
+        return room;
     }
 
     private void tendFlower(String token, Long flowerId,

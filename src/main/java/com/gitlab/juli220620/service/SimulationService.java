@@ -19,7 +19,8 @@ public class SimulationService {
     private final RoomFlowerRepo flowerRepo;
 
     public RoomFlowerEntity update(RoomFlowerEntity flower, LocalDateTime updateTime) {
-        if (!flower.getUpdated().isBefore(updateTime)) throw new RuntimeException("No time traveling allowed");
+//        if (!flower.getUpdated().isBefore(updateTime)) throw new RuntimeException("No time traveling allowed");
+        if (flower.getStatus().equals(DEAD_STATUS)) return flower;
 
         long duration = ChronoUnit.SECONDS.between(flower.getUpdated(), updateTime);
         long ticksPassed = duration / SECONDS_IN_TICK;
@@ -32,7 +33,7 @@ public class SimulationService {
 
         checkDeathConditions(flower, ticksPassed, waterLeft, nutrientLeft);
 
-        long currentGrowth = Math.min(flower.getBaseFlower().getGrowthTime(), (flower.getGrowth() + ticksPassed));
+        long currentGrowth = Math.min(flower.getBaseFlower().getGrowthTime(), Math.max((flower.getGrowth() + ticksPassed), 0));
 
         if (flower.getStatus().contentEquals(GROWING_STATUS)
                 && flower.getBaseFlower().getGrowthTime() <= currentGrowth) {

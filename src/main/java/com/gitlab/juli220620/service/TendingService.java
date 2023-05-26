@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.function.Consumer;
 
+import static com.gitlab.juli220620.service.SimulationService.DEAD_STATUS;
+
 @Service
 @RequiredArgsConstructor
 public class TendingService {
@@ -24,6 +26,8 @@ public class TendingService {
     }
 
     private Integer add(Integer amount, RoomFlowerEntity flower, Consumer<Integer> valueSettingStrategy) {
+        if (flower.getStatus().equals(DEAD_STATUS)) return 0;
+
         int emptySpace = flower.getBasePot().getCapacity() - flower.getWater() - flower.getNutrient();
         int actualAmount = Math.min(emptySpace, amount);
 

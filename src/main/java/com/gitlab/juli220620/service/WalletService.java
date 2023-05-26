@@ -3,6 +3,7 @@ package com.gitlab.juli220620.service;
 import com.gitlab.juli220620.dao.entity.CurrencyDictEntity;
 import com.gitlab.juli220620.dao.entity.UserCurrencyEntity;
 import com.gitlab.juli220620.dao.entity.UserEntity;
+import com.gitlab.juli220620.dao.repo.CurrencyDictRepo;
 import com.gitlab.juli220620.dao.repo.UserRepo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 public class WalletService {
 
     private final UserRepo userRepo;
+    private final CurrencyDictRepo currencyDictRepo;
 
     public boolean spend(Integer amount, String currencyId, UserEntity user) {
         UserCurrencyEntity entity = user.getWallet().stream()
@@ -24,6 +26,12 @@ public class WalletService {
 
         userRepo.save(user);
         return true;
+    }
+
+    public void receive(Integer amount, String currencyId, UserEntity user) {
+        CurrencyDictEntity currency = currencyDictRepo.findById(currencyId)
+                .orElseThrow(() -> new RuntimeException("No such currency"));
+        receive(amount, currency, user);
     }
 
     public void receive(Integer amount, CurrencyDictEntity currency, UserEntity user) {

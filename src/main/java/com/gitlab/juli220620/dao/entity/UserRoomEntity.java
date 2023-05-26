@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 import static jakarta.persistence.CascadeType.*;
 import static jakarta.persistence.FetchType.LAZY;
 
@@ -27,4 +29,7 @@ public class UserRoomEntity {
     @ManyToOne(optional = false, fetch = LAZY, cascade = { DETACH, MERGE, REFRESH })
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private UserEntity user;
+
+    @OneToMany(cascade = ALL, mappedBy = "room")
+    private List<RoomFlowerEntity> flowers;
 }
