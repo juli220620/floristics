@@ -18,6 +18,7 @@ public class CurrencyDictEntity {
     public static final String CASH_ID = "CASH";
     public static final String GREEN_ID = "GREEN";
     public static final String BLUE_ID = "BLUE";
+    public static final String RED_ID = "RED";
 
     @Id
     private String id;

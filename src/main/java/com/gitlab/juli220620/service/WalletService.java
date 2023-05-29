@@ -7,6 +7,9 @@ import com.gitlab.juli220620.dao.repo.CurrencyDictRepo;
 import com.gitlab.juli220620.dao.repo.UserRepo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import static com.gitlab.juli220620.dao.entity.CurrencyDictEntity.CASH_ID;
 
 @Service
 @RequiredArgsConstructor
@@ -42,5 +45,22 @@ public class WalletService {
         entity.setAmount(entity.getAmount() + amount);
         user.getWallet().add(entity);
         userRepo.save(user);
+    }
+
+    @Transactional
+    public void sell(Integer amount, String currencyId, UserEntity user) {
+        if (currencyId.equals(CASH_ID)) throw new RuntimeException("Can't sell cash");
+
+        UserCurrencyEntity sold = user.getWallet().stream()
+                .filter(it -> it.getCurrencyId().equals(currencyId)).findFirst()
+                .filter(it -> it.getAmount() >= amount)
+                .orElseThrow(() -> new RuntimeException("Not enough currency"));
+
+        UserCurrencyEntity cash = user.getWallet().stream()
+                        .filter(it -> it.getCurrencyId().equals(CASH_ID)).findFirst()
+                .orElseThrow(() -> new RuntimeException("No cash"));
+
+        cash.setAmount(cash.getAmount() + (amount * 10));
+        sold.setAmount(sold.getAmount() - amount);
     }
 }
