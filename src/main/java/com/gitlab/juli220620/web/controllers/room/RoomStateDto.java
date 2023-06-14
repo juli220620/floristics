@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -20,6 +21,7 @@ public class RoomStateDto {
 
     private List<FlowerStateDto> flowers;
     private Integer area;
+    private String serverTime;
 
     public RoomStateDto(UserRoomEntity room) {
         id = room.getId();
@@ -29,6 +31,8 @@ public class RoomStateDto {
         flowers = room.getFlowers().stream()
                 .map(FlowerStateDto::new)
                 .collect(Collectors.toList());
+
+        serverTime = LocalDateTime.now().format(FlowerStateDto.formatter);
     }
 
 }

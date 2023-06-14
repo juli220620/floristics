@@ -30,6 +30,7 @@ public class AuthUtils {
 
     public static String extractToken(HttpServletRequest rq) {
         return Arrays.stream(Optional.ofNullable(rq.getCookies()).orElse(new Cookie[]{}))
+                .filter(it -> it.getName().equals("token"))
                 .findFirst()
                 .map(Cookie::getValue)
                 .orElseThrow(() -> new RuntimeException("Fuck you from Smokin' Joe"));
