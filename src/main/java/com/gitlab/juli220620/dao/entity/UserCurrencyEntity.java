@@ -7,22 +7,23 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import static jakarta.persistence.CascadeType.*;
+
 @Getter
 @Setter
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@IdClass(UserCurrencyEntityId.class)
 @Table(name = "user_currency")
 public class UserCurrencyEntity {
 
-    @Id
-    @Column(name = "user_id")
-    private Long userId;
+    @EmbeddedId
+    private UserCurrencyEntityId id;
 
-    @Id
-    @Column(name = "currency_id")
-    private String currencyId;
+    @MapsId("currencyId")
+    @ManyToOne(fetch = FetchType.LAZY, cascade = {REFRESH, PERSIST, MERGE}, optional = false)
+    @JoinColumn(name = "currency_id", referencedColumnName = "id")
+    private CurrencyDictEntity currency;
 
     private Integer amount;
 }

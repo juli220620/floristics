@@ -3,6 +3,7 @@ package com.gitlab.juli220620.service;
 import com.gitlab.juli220620.dao.entity.CurrencyDictEntity;
 import com.gitlab.juli220620.dao.entity.UserCurrencyEntity;
 import com.gitlab.juli220620.dao.entity.UserEntity;
+import com.gitlab.juli220620.dao.entity.identity.UserCurrencyEntityId;
 import com.gitlab.juli220620.dao.repo.CurrencyDictRepo;
 import com.gitlab.juli220620.dao.repo.UserRepo;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +21,7 @@ public class WalletService {
 
     public boolean spend(Integer amount, String currencyId, UserEntity user) {
         UserCurrencyEntity entity = user.getWallet().stream()
-                .filter(currency -> currency.getCurrencyId().contentEquals(currencyId))
+                .filter(currency -> currency.getCurrency().getId().contentEquals(currencyId))
                 .findFirst().orElse(null);
         if (entity == null || entity.getAmount() == null || entity.getAmount() < amount) return false;
 
@@ -39,8 +40,8 @@ public class WalletService {
 
     public void receive(Integer amount, CurrencyDictEntity currency, UserEntity user) {
         UserCurrencyEntity entity = user.getWallet().stream()
-                .filter(it -> it.getCurrencyId().contentEquals(currency.getId()))
-                .findFirst().orElse(new UserCurrencyEntity(user.getId(), currency.getId(), 0));
+                .filter(it -> it.getCurrency().getId().contentEquals(currency.getId()))
+                .findFirst().orElse(new UserCurrencyEntity(new UserCurrencyEntityId(user.getId(), null), currency, 0));
 
         entity.setAmount(entity.getAmount() + amount);
         user.getWallet().add(entity);
@@ -52,15 +53,15 @@ public class WalletService {
         if (currencyId.equals(CASH_ID)) throw new RuntimeException("Can't sell cash");
 
         UserCurrencyEntity sold = user.getWallet().stream()
-                .filter(it -> it.getCurrencyId().equals(currencyId)).findFirst()
+                .filter(it -> it.getCurrency().getId().equals(currencyId)).findFirst()
                 .filter(it -> it.getAmount() >= amount)
                 .orElseThrow(() -> new RuntimeException("Not enough currency"));
 
         UserCurrencyEntity cash = user.getWallet().stream()
-                        .filter(it -> it.getCurrencyId().equals(CASH_ID)).findFirst()
+                        .filter(it -> it.getCurrency().getId().equals(CASH_ID)).findFirst()
                 .orElseThrow(() -> new RuntimeException("No cash"));
 
-        cash.setAmount(cash.getAmount() + (amount * 10));
+        cash.setAmount(cash.getAmount() + (amount * sold.getCurrency().getFactorToCash()));
         sold.setAmount(sold.getAmount() - amount);
     }
 }

@@ -9,6 +9,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.gitlab.juli220620.service.SimulationService.RIPE_STATUS;
+
 @Service
 @RequiredArgsConstructor
 public class HarvestService {
@@ -17,7 +19,7 @@ public class HarvestService {
 
     public Map<String, Integer> harvest(RoomFlowerEntity flower) {
         Map<String, Integer> harvestResult = new HashMap<>(
-                flower.getStatus().contentEquals("RIPE")
+                flower.getStatus().contentEquals(RIPE_STATUS)
                         ? flower.getBaseFlower().getHarvest()
                         : Collections.emptyMap()
         );

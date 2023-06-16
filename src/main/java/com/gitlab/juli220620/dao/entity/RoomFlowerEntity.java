@@ -24,7 +24,9 @@ public class RoomFlowerEntity {
     private Integer nutrient;
     private Long growth;
     private LocalDateTime updated;
+    private LocalDateTime planted;
     private String status;
+    private Long deathTicks;
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
