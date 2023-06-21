@@ -24,7 +24,7 @@ public class UserDto {
         username = entity.getUsername();
         id = entity.getId();
         wallet = entity.getWallet().stream().collect(Collectors.toMap(
-                UserCurrencyEntity::getCurrencyId,
+                currency -> currency.getCurrency().getId(),
                 UserCurrencyEntity::getAmount));
     }
 }

@@ -7,8 +7,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
-
 @RestController
 @RequestMapping("/api/room/{roomId}")
 @RequiredArgsConstructor
@@ -22,7 +20,6 @@ public class RoomController {
                                         @PathVariable Long roomId,
                                         HttpServletRequest http) {
         return authUtils.authorized(http, token -> {
-            roomFacade.updateRoom(roomId, token, LocalDateTime.now());
             roomFacade.plantFlower(token, rq.getBaseFlowerId(), rq.getPotId(), roomId);
             return null;
         });
@@ -33,7 +30,6 @@ public class RoomController {
                                         @PathVariable Long roomId,
                                         HttpServletRequest http) {
         return authUtils.authorized(http, token -> {
-            roomFacade.updateRoom(roomId, token, LocalDateTime.now());
             roomFacade.waterFlower(token, rq.getFlowerId(), rq.getAmount());
             return null;
         });
@@ -44,7 +40,6 @@ public class RoomController {
                                        @PathVariable Long roomId,
                                        HttpServletRequest http) {
         return authUtils.authorized(http, token -> {
-            roomFacade.updateRoom(roomId, token, LocalDateTime.now());
             roomFacade.feedFlower(token, rq.getFlowerId(), rq.getAmount());
             return null;
         });
@@ -55,26 +50,15 @@ public class RoomController {
                                           @PathVariable Long flowerId,
                                           HttpServletRequest http) {
         return authUtils.authorized(http, token -> {
-            roomFacade.updateRoom(roomId, token, LocalDateTime.now());
             roomFacade.harvestFlower(token, flowerId);
             return null;
         });
     }
 
     @GetMapping
-    public ResponseEntity<RoomStateDto> update(@PathVariable Long roomId,
-                                               HttpServletRequest http) {
+    public ResponseEntity<RoomStateDto> getRoomState(@PathVariable Long roomId,
+                                                     HttpServletRequest http) {
         return authUtils.authorized(http, token ->
-                new RoomStateDto(roomFacade.updateRoom(roomId, token, LocalDateTime.now())));
-    }
-
-    @PutMapping("/{additive}")
-    public ResponseEntity<Object> update(@PathVariable Long roomId,
-                                         @PathVariable Integer additive,
-                                         HttpServletRequest http) {
-        return authUtils.admin(http, token -> {
-            roomFacade.updateRoom(roomId, token, LocalDateTime.now().plusMinutes(additive));
-            return null;
-        });
+                new RoomStateDto(roomFacade.getRoom(roomId, token)));
     }
 }

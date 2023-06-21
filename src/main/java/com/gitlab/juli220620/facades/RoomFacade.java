@@ -10,8 +10,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
@@ -29,7 +27,6 @@ public class RoomFacade {
     private final LoginService loginService;
     private final TendingService tendingService;
     private final HarvestService harvestService;
-    private final SimulationService simulationService;
 
     private final UserRoomRepo roomRepo;
     private final RoomFlowerRepo roomFlowerRepo;
@@ -76,13 +73,11 @@ public class RoomFacade {
                 walletService.receive(amount, currencyId, entity.getRoom().getUser()));
     }
 
-    public UserRoomEntity updateRoom(Long roomId, String token, LocalDateTime update) {
+    public UserRoomEntity getRoom(Long roomId, String token) {
         UserRoomEntity room = roomRepo.findById(roomId).orElseThrow(() -> new RuntimeException("Invalid room"));
 
         if (!loginService.checkUserToken(token, room.getUser()))
             throw new RuntimeException("That's not your room");
-
-        new ArrayList<>(room.getFlowers()).forEach(it -> simulationService.update(it, update));
 
         return room;
     }

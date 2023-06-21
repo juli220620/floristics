@@ -32,10 +32,13 @@ public class PlantingService {
     }
 
     public RoomFlowerEntity plantFlower(BaseFlowerDictEntity baseFlower, PotDictEntity pot, UserRoomEntity room) {
+        LocalDateTime now = LocalDateTime.now();
         return flowerRepo.save(new RoomFlowerEntity(
                 0, 0, 0L,
-                LocalDateTime.now(),
+                now,
+                now,
                 GROWING_STATUS,
+                0L,
                 null,
                 room, baseFlower, pot
         ));

@@ -23,5 +23,5 @@ public class CurrencyDictEntity {
     @Id
     private String id;
     private String name;
-
+    private Integer factorToCash;
 }
