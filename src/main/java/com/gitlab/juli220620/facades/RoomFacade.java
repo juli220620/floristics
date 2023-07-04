@@ -6,6 +6,7 @@ import com.gitlab.juli220620.dao.entity.UserRoomEntity;
 import com.gitlab.juli220620.dao.repo.RoomFlowerRepo;
 import com.gitlab.juli220620.dao.repo.UserRoomRepo;
 import com.gitlab.juli220620.service.*;
+import com.gitlab.juli220620.service.harvest.HarvestService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

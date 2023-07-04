@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.List;
+import java.util.Map;
 
 import static jakarta.persistence.CascadeType.ALL;
 
@@ -26,6 +27,13 @@ public class UserEntity {
     @OneToMany(orphanRemoval = true, cascade = ALL)
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private List<UserCurrencyEntity> wallet;
+
+    @ElementCollection
+    @CollectionTable(name = "user_flower_count",
+            joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "id")})
+    @MapKeyColumn(name = "flower_id")
+    @Column(name = "count")
+    private Map<String, Long> flowerCount;
 
     @OneToMany(orphanRemoval = true, cascade = ALL, mappedBy = "user")
     private List<UserAchievementEntity> achievements;

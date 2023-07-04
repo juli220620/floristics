@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
 import java.util.Map;
 
 @Getter
@@ -30,4 +31,7 @@ public class BaseFlowerDictEntity {
     @MapKeyColumn(name = "currency_id")
     @Column(name = "amount")
     private Map<String, Integer> harvest;
+
+    @OneToMany(mappedBy = "baseFlower")
+    private List<HarvestBonusEntity> harvestBonuses;
 }
