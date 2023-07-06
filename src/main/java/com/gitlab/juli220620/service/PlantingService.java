@@ -21,6 +21,7 @@ public class PlantingService {
     private final RoomFlowerRepo flowerRepo;
     private final BaseFlowerDictRepo baseFlowerDictRepo;
     private final PotDictRepo potDictRepo;
+    private final AchievementService achievementService;
 
     public RoomFlowerEntity plantFlower(String flowerId, String potId, UserRoomEntity room) {
         BaseFlowerDictEntity baseFlower = baseFlowerDictRepo.findById(flowerId)
@@ -33,6 +34,7 @@ public class PlantingService {
 
     public RoomFlowerEntity plantFlower(BaseFlowerDictEntity baseFlower, PotDictEntity pot, UserRoomEntity room) {
         LocalDateTime now = LocalDateTime.now();
+        achievementService.processBolshieNadezhdy(room.getUser(), baseFlower);
         return flowerRepo.save(new RoomFlowerEntity(
                 0, 0, 0L,
                 now,

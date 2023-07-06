@@ -16,6 +16,7 @@ import static com.gitlab.juli220620.service.SimulationService.RIPE_STATUS;
 public class HarvestService {
 
     private final RoomFlowerRepo flowerRepo;
+    private final AchievementService achievementService;
 
     public Map<String, Integer> harvest(RoomFlowerEntity flower) {
         Map<String, Integer> harvestResult = new HashMap<>(
@@ -23,6 +24,9 @@ public class HarvestService {
                         ? flower.getBaseFlower().getHarvest()
                         : Collections.emptyMap()
         );
+
+        if (flower.getStatus().equals(RIPE_STATUS)) achievementService
+                .processMaminSadovod(flower.getRoom().getUser(), flower.getBaseFlower());
 
         flowerRepo.customDelete(flower.getId());
 

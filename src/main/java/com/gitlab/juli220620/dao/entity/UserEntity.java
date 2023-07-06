@@ -27,6 +27,9 @@ public class UserEntity {
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private List<UserCurrencyEntity> wallet;
 
+    @OneToMany(orphanRemoval = true, cascade = ALL, mappedBy = "user")
+    private List<UserAchievementEntity> achievements;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
