@@ -38,6 +38,10 @@ public class UserEntity {
     @OneToMany(orphanRemoval = true, cascade = ALL, mappedBy = "user")
     private List<UserAchievementEntity> achievements;
 
+    @OneToMany(orphanRemoval = true, cascade = {ALL})
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    private List<UserGameSystemEntity> workingSystems;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
