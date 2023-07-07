@@ -1,7 +1,9 @@
 package com.gitlab.juli220620.service.harvest.strategies;
 
 import com.gitlab.juli220620.dao.entity.RoomFlowerEntity;
+import com.gitlab.juli220620.dao.entity.UserRoomEntity;
 import com.gitlab.juli220620.dao.repo.RoomFlowerRepo;
+import com.gitlab.juli220620.service.systems.PotCashbackGameSystem;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -22,6 +24,8 @@ class DeadHarvestStrategyTest {
 
     @Mock
     private RoomFlowerRepo roomFlowerRepo;
+    @Mock
+    private PotCashbackGameSystem potCashbackGameSystem;
     @Spy
     @InjectMocks
     private DeadHarvestStrategy deadHarvestStrategy;
@@ -31,6 +35,7 @@ class DeadHarvestStrategyTest {
         RoomFlowerEntity mockFlower = Mockito.mock(RoomFlowerEntity.class);
         long flowerId = 1244;
         Mockito.doReturn(flowerId).when(mockFlower).getId();
+        Mockito.doReturn(Mockito.mock(UserRoomEntity.class)).when(mockFlower).getRoom();
 
         Map<String, Integer> result = deadHarvestStrategy.process(mockFlower);
 

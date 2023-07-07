@@ -5,6 +5,7 @@ import com.gitlab.juli220620.dao.entity.RoomFlowerEntity;
 import com.gitlab.juli220620.dao.repo.RoomFlowerRepo;
 import com.gitlab.juli220620.service.AchievementService;
 import com.gitlab.juli220620.service.harvest.HarvestBonusService;
+import com.gitlab.juli220620.service.systems.PotCashbackGameSystem;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -18,8 +19,11 @@ import static com.gitlab.juli220620.service.SimulationService.RIPE_STATUS;
 public class RipeHarvestStrategy implements HarvestStrategy {
 
     private final RoomFlowerRepo roomFlowerRepo;
+
     private final HarvestBonusService harvestBonusService;
     private final AchievementService achievementService;
+
+    private final PotCashbackGameSystem potCashbackGameSystem;
 
     @Override
     public Map<String, Integer> process(RoomFlowerEntity flower) {
@@ -42,6 +46,7 @@ public class RipeHarvestStrategy implements HarvestStrategy {
             harvest.put(key, modifiedHarvest);
         });
 
+        potCashbackGameSystem.cashback(flower.getRoom().getUser(), flower.getBasePot());
         roomFlowerRepo.customDelete(flower.getId());
 
         return harvest;

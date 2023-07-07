@@ -2,7 +2,9 @@ package com.gitlab.juli220620.service.harvest.strategies;
 
 import com.gitlab.juli220620.dao.entity.*;
 import com.gitlab.juli220620.dao.repo.RoomFlowerRepo;
+import com.gitlab.juli220620.service.AchievementService;
 import com.gitlab.juli220620.service.harvest.HarvestBonusService;
+import com.gitlab.juli220620.service.systems.PotCashbackGameSystem;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -33,6 +35,10 @@ class RipeHarvestStrategyTest {
     RipeHarvestStrategy strategy;
     @Mock
     private RoomFlowerEntity flower;
+    @Mock
+    private PotCashbackGameSystem potCashbackGameSystem;
+    @Mock
+    private AchievementService achievementService;
     @Mock
     RoomFlowerRepo roomFlowerRepo;
     @Mock
