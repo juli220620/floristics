@@ -36,9 +36,18 @@ public class PlantingService {
         return plantFlower(baseFlower, pot, cycles, room);
     }
 
-    public RoomFlowerEntity plantFlower(BaseFlowerDictEntity baseFlower, PotDictEntity pot, Integer cycles, UserRoomEntity room) {
+    public RoomFlowerEntity plantFlower(BaseFlowerDictEntity baseFlower,
+                                        PotDictEntity pot,
+                                        Integer cycles,
+                                        UserRoomEntity room) {
+
+        int usedSpace = room.getFlowers().stream().mapToInt(flower -> flower.getBasePot().getSize()).sum();
+        if (usedSpace + pot.getSize() > room.getArea()) throw new RuntimeException("Not enough space");
+
         LocalDateTime now = LocalDateTime.now();
+
         achievementService.processBolshieNadezhdy(room.getUser(), baseFlower);
+
         RoomFlowerEntity entity = new RoomFlowerEntity(
                 0, 0, 0L,
                 now,
@@ -50,7 +59,9 @@ public class PlantingService {
                 null,
                 room, baseFlower, pot
         );
+
         perennialFlowersGameSystem.processPerennialFlower(room.getUser(), entity, cycles);
+
         return flowerRepo.save(entity);
     }
 }

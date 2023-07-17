@@ -21,5 +21,5 @@ public class PotDictEntity {
     private String name;
     private Integer capacity;
     private Integer price;
-
+    private Integer size;
 }
