@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+@SuppressWarnings("unused")
 @RestController
 @RequestMapping("/api/room/{roomId}")
 @RequiredArgsConstructor
@@ -20,7 +21,7 @@ public class RoomController {
                                         @PathVariable Long roomId,
                                         HttpServletRequest http) {
         return authUtils.authorized(http, token -> {
-            roomFacade.plantFlower(token, rq.getBaseFlowerId(), rq.getPotId(), roomId);
+            roomFacade.plantFlower(token, rq.getBaseFlowerId(), rq.getPotId(), rq.getCycles(), roomId);
             return null;
         });
     }

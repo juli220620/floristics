@@ -7,6 +7,7 @@ import com.gitlab.juli220620.dao.repo.RoomFlowerRepo;
 import com.gitlab.juli220620.dao.repo.UserRoomRepo;
 import com.gitlab.juli220620.service.*;
 import com.gitlab.juli220620.service.harvest.HarvestService;
+import com.gitlab.juli220620.service.systems.PerennialFlowersGameSystem;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,8 +33,10 @@ public class RoomFacade {
     private final UserRoomRepo roomRepo;
     private final RoomFlowerRepo roomFlowerRepo;
 
+    private final PerennialFlowersGameSystem perennialFlowersGameSystem;
+
     @Transactional
-    public RoomFlowerEntity plantFlower(String token, String baseFlowerId, String potId, Long roomId) {
+    public RoomFlowerEntity plantFlower(String token, String baseFlowerId, String potId, Integer cycles, Long roomId) {
         UserRoomEntity room = roomRepo.findById(roomId)
                 .orElseThrow(() -> new RuntimeException("No such room"));
 
@@ -41,10 +44,12 @@ public class RoomFacade {
         if (user.getUserRooms().stream().noneMatch(it -> Objects.equals(it.getId(), roomId)))
             throw new RuntimeException("Invalid room");
 
-        RoomFlowerEntity entity = plantingService.plantFlower(baseFlowerId, potId, room);
+        RoomFlowerEntity entity = plantingService.plantFlower(baseFlowerId, potId, cycles, room);
 
         int amount = entity.getBaseFlower().getPrice() + entity.getBasePot().getPrice();
-        if (!walletService.spend(amount, CASH_ID, user))
+        int correctedAmount = perennialFlowersGameSystem.modifyPrice(amount, entity);
+
+        if (!walletService.spend(correctedAmount, CASH_ID, user))
             throw new RuntimeException("Insufficient funds");
 
         return entity;

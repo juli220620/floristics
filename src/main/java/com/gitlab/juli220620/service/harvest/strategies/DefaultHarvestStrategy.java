@@ -12,7 +12,7 @@ public class DefaultHarvestStrategy implements HarvestStrategy {
     }
 
     @Override
-    public String getStatus() {
+    public StrategyKey getKey() {
         return null;
     }
 }

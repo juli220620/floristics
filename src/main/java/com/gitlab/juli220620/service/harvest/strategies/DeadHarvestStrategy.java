@@ -15,6 +15,8 @@ import static com.gitlab.juli220620.service.SimulationService.DEAD_STATUS;
 @RequiredArgsConstructor
 public class DeadHarvestStrategy implements HarvestStrategy {
 
+    public static final StrategyKey DEAD_STRATEGY_KEY = new StrategyKey(DEAD_STATUS, null);
+
     private final RoomFlowerRepo roomFlowerRepo;
     private final PotCashbackGameSystem potCashbackGameSystem;
 
@@ -26,7 +28,7 @@ public class DeadHarvestStrategy implements HarvestStrategy {
     }
 
     @Override
-    public String getStatus() {
-        return DEAD_STATUS;
+    public StrategyKey getKey() {
+        return DEAD_STRATEGY_KEY;
     }
 }

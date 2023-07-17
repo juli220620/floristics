@@ -1,59 +1,40 @@
 package com.gitlab.juli220620.service.harvest.strategies;
 
-import com.gitlab.juli220620.dao.entity.HarvestBonusEntity;
 import com.gitlab.juli220620.dao.entity.RoomFlowerEntity;
 import com.gitlab.juli220620.dao.repo.RoomFlowerRepo;
 import com.gitlab.juli220620.service.AchievementService;
 import com.gitlab.juli220620.service.harvest.HarvestBonusService;
 import com.gitlab.juli220620.service.systems.PotCashbackGameSystem;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-
-import java.util.HashMap;
-import java.util.Map;
 
 import static com.gitlab.juli220620.service.SimulationService.RIPE_STATUS;
 
 @Component
-@RequiredArgsConstructor
-public class RipeHarvestStrategy implements HarvestStrategy {
+public class RipeHarvestStrategy extends AbstractRipeStrategy {
+
+    public static final StrategyKey RIPE_STRATEGY_KEY = new StrategyKey(RIPE_STATUS, false);
 
     private final RoomFlowerRepo roomFlowerRepo;
 
-    private final HarvestBonusService harvestBonusService;
-    private final AchievementService achievementService;
-
     private final PotCashbackGameSystem potCashbackGameSystem;
 
-    @Override
-    public Map<String, Integer> process(RoomFlowerEntity flower) {
-        Map<String, Integer> harvest = new HashMap<>(flower.getBaseFlower().getHarvest());
-
-        achievementService.processMaminSadovod(flower.getRoom().getUser(), flower.getBaseFlower());
-
-        Map<String, HarvestBonusEntity> bonuses = harvestBonusService.getHarvestBonuses(
-                flower.getRoom().getUser(),
-                flower.getBaseFlower()
-        );
-
-        bonuses.forEach((key, bonus) -> {
-            if (!harvest.containsKey(key)) return;
-
-            Integer baseHarvest = harvest.get(key);
-            if (baseHarvest == null) return;
-
-            Integer modifiedHarvest = (int) (baseHarvest * bonus.getMultiplier()) + bonus.getFlatBonus();
-            harvest.put(key, modifiedHarvest);
-        });
-
-        potCashbackGameSystem.cashback(flower.getRoom().getUser(), flower.getBasePot());
-        roomFlowerRepo.customDelete(flower.getId());
-
-        return harvest;
+    public RipeHarvestStrategy(HarvestBonusService harvestBonusService,
+                               AchievementService achievementService,
+                               RoomFlowerRepo repo,
+                               PotCashbackGameSystem potCashbackGameSystem) {
+        super(harvestBonusService, achievementService);
+        roomFlowerRepo = repo;
+        this.potCashbackGameSystem = potCashbackGameSystem;
     }
 
     @Override
-    public String getStatus() {
-        return RIPE_STATUS;
+    protected void postProcessFlower(RoomFlowerEntity flower) {
+        potCashbackGameSystem.cashback(flower.getRoom().getUser(), flower.getBasePot());
+        roomFlowerRepo.customDelete(flower.getId());
+    }
+
+    @Override
+    public StrategyKey getKey() {
+        return RIPE_STRATEGY_KEY;
     }
 }

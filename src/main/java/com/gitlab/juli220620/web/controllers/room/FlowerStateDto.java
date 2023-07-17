@@ -28,6 +28,8 @@ public class FlowerStateDto {
     private Long deathTicks;
     private String lastUpdate;
     private String planted;
+    private Integer currentCycle;
+    private Integer cycles;
 
     public FlowerStateDto(RoomFlowerEntity flower) {
         id = flower.getId();
@@ -43,5 +45,7 @@ public class FlowerStateDto {
         deathTicks = flower.getDeathTicks();
         lastUpdate = flower.getUpdated().format(formatter);
         planted = flower.getPlanted().format(formatter);
+        currentCycle = flower.getCurrentCycle();
+        cycles = flower.getCycles();
     }
 }

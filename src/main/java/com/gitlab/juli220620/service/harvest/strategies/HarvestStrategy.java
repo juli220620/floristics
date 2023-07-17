@@ -8,5 +8,5 @@ public interface HarvestStrategy {
 
     Map<String, Integer> process(RoomFlowerEntity flower);
 
-    String getStatus();
+    StrategyKey getKey();
 }

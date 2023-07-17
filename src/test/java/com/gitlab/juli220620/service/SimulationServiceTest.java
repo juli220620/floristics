@@ -38,6 +38,8 @@ class SimulationServiceTest {
             null, null,
             GROWING_STATUS,
             0L,
+            null,
+            null,
             null, null, null, null));
 
     @Mock

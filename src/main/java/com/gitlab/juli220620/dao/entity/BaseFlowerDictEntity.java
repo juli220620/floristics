@@ -24,6 +24,7 @@ public class BaseFlowerDictEntity {
     private Integer waterConsumption;
     private Integer nutrientConsumption;
     private Integer price;
+    private Integer maxCycles;
 
     @ElementCollection
     @CollectionTable(name = "flower_harvest",

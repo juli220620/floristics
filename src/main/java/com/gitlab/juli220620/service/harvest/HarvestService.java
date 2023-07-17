@@ -14,7 +14,7 @@ public class HarvestService {
 
     public Map<String, Integer> harvest(RoomFlowerEntity flower) {
         return strategyFactory
-                .getHarvestStrategy(flower.getStatus())
+                .getHarvestStrategy(flower)
                 .process(flower);
     }
 }
