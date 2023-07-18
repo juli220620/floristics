@@ -68,7 +68,7 @@ public class GameSystemService {
         UserGameSystemEntity userSystem = user.getWorkingSystems().stream()
                 .filter(it -> it.getId().getSystemId().contentEquals(systemId))
                 .findFirst()
-                .orElseThrow();
+                .orElseThrow(() -> new RuntimeException("No such system"));
 
         GameSystem target = systems.get(systemId);
         Map<String, Integer> costs = Optional.ofNullable(target.getCost().get(userSystem.getSystemLevel() + 1))
