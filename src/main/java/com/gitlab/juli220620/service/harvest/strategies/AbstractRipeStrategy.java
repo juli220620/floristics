@@ -12,8 +12,8 @@ import java.util.Map;
 @RequiredArgsConstructor
 public abstract class AbstractRipeStrategy implements HarvestStrategy {
 
-    private final HarvestBonusService harvestBonusService;
-    private final AchievementService achievementService;
+    protected final HarvestBonusService harvestBonusService;
+    protected final AchievementService achievementService;
 
     public Map<String, Integer> process(RoomFlowerEntity flower) {
 
@@ -35,6 +35,9 @@ public abstract class AbstractRipeStrategy implements HarvestStrategy {
             Integer modifiedHarvest = (int) (baseHarvest * bonus.getMultiplier()) + bonus.getFlatBonus();
             harvest.put(key, modifiedHarvest);
         });
+
+        flower.getRoom().getUser().getFlowerCount()
+                .compute(flower.getBaseFlower().getId(), (s, value) -> value == null ? 1 : value + 1);
 
         postProcessFlower(flower);
 

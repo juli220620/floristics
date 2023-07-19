@@ -31,4 +31,5 @@ public class HarvestBonusEntity {
 
     private Double multiplier;
     private Integer flatBonus;
+    private Double freeOffspringChance;
 }

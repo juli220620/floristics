@@ -6,6 +6,7 @@ import com.gitlab.juli220620.service.AchievementService;
 import com.gitlab.juli220620.service.harvest.HarvestBonusService;
 import com.gitlab.juli220620.service.systems.PotCashbackGameSystem;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -20,6 +21,7 @@ import org.mockito.quality.Strictness;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.gitlab.juli220620.service.SimulationService.GROWING_STATUS;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -33,7 +35,7 @@ class RipeHarvestStrategyTest {
     @Spy
     @InjectMocks
     RipeHarvestStrategy strategy;
-    @Mock
+    @Spy
     private RoomFlowerEntity flower;
     @Mock
     private PotCashbackGameSystem potCashbackGameSystem;
@@ -50,12 +52,12 @@ class RipeHarvestStrategyTest {
         UserRoomEntity room = Mockito.mock(UserRoomEntity.class);
         BaseFlowerDictEntity baseFlower = Mockito.mock(BaseFlowerDictEntity.class);
 
-        Mockito.doReturn(FLOWER_ID).when(flower).getId();
-        Map<String, Long> harvest = Map.of(CURRENCY1_ID, 100L, CURRENCY2_ID, 20L);
-        Mockito.doReturn(room).when(flower).getRoom();
+        flower.setId(FLOWER_ID);
+        Map<String, Integer> harvest = Map.of(CURRENCY1_ID, 100, CURRENCY2_ID, 20);
+        flower.setRoom(room);
         Mockito.doReturn(user).when(room).getUser();
         Mockito.doReturn(harvest).when(baseFlower).getHarvest();
-        Mockito.doReturn(baseFlower).when(flower).getBaseFlower();
+        flower.setBaseFlower(baseFlower);
     }
 
     @ParameterizedTest
@@ -64,10 +66,27 @@ class RipeHarvestStrategyTest {
             "300,20,"+CURRENCY1_ID+",SOMETHING_ELSE",
             "100,20,SOMETHING_SOMETHING,SOMETHING_ELSE",
     })
-    public void process_whenCalled_happyPass(int curr1, int curr2, String id1, String id2) {
+    public void process_whenWithoutOffspringChance_flowerDeleted(int curr1, int curr2, String id1, String id2) {
         createBonuses(id1, id2);
         checkRes(curr1, curr2);
         Mockito.verify(roomFlowerRepo, Mockito.times(1)).customDelete(FLOWER_ID);
+    }
+
+    @Test
+    public void postProcess_whenChanceForOffspring_UpdatesEntity() {
+        Map<String, HarvestBonusEntity> bonuses = Map.of(CURRENCY1_ID, new HarvestBonusEntity(
+                null, null, null, 0.1, 2, 1.0));
+        Mockito.doReturn(bonuses).when(bonusService).getHarvestBonuses(Mockito.any(), Mockito.any());
+        flower.setStatus("Something");
+        flower.setGrowth(15L);
+        flower.setDeathTicks(2L);
+
+        strategy.postProcessFlower(flower);
+
+        assertEquals(GROWING_STATUS, flower.getStatus());
+        assertEquals(0L, flower.getGrowth());
+        assertEquals(0L, flower.getDeathTicks());
+        Mockito.verify(roomFlowerRepo, Mockito.times(0)).customDelete(FLOWER_ID);
     }
 
     private void checkRes(Integer curr1, Integer curr2) {
@@ -86,7 +105,8 @@ class RipeHarvestStrategyTest {
             String currId = curr[i];
             Double mul = (double) (2 + i);
             Integer flat = (1 + i) * 100;
-            bonuses.put(currId, new HarvestBonusEntity(null, null, null, mul, flat));
+            Double offspring = 0.;
+            bonuses.put(currId, new HarvestBonusEntity(null, null, null, mul, flat, offspring));
         }
         Mockito.doReturn(bonuses)
                 .when(bonusService).getHarvestBonuses(
