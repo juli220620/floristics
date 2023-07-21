@@ -24,7 +24,7 @@ public class GameSystemFacade {
     public void buyGameSystem(String token, String systemId) {
         UserEntity user = loginService.findUserByToken(token);
 
-        Map<String, Integer> costs = gameSystemService.addSystem(user, systemId);
+        Map<String, Long> costs = gameSystemService.addSystem(user, systemId);
 
         boolean success = costs.entrySet().stream()
                         .allMatch(entry -> walletService.spend(entry.getValue(), entry.getKey(), user));
@@ -35,7 +35,7 @@ public class GameSystemFacade {
     public void upgradeGameSystem(String token, String systemId) {
         UserEntity user = loginService.findUserByToken(token);
 
-        Map<String, Integer> costs = gameSystemService.upgradeSystem(user, systemId);
+        Map<String, Long> costs = gameSystemService.upgradeSystem(user, systemId);
 
         boolean success = costs.entrySet().stream()
                 .allMatch(payment -> walletService.spend(payment.getValue(), payment.getKey(), user));

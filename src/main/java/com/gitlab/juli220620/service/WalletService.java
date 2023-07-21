@@ -19,29 +19,32 @@ public class WalletService {
     private final UserRepo userRepo;
     private final CurrencyDictRepo currencyDictRepo;
 
-    public boolean spend(Integer amount, String currencyId, UserEntity user) {
+    public boolean spend(Long amount, String currencyId, UserEntity user) {
         UserCurrencyEntity entity = user.getWallet().stream()
                 .filter(currency -> currency.getCurrency().getId().contentEquals(currencyId))
                 .findFirst().orElse(null);
         if (entity == null || entity.getAmount() == null || entity.getAmount() < amount) return false;
 
-        int initialAmount = entity.getAmount();
+        long initialAmount = entity.getAmount();
         entity.setAmount(initialAmount - amount);
 
         userRepo.save(user);
         return true;
     }
 
-    public void receive(Integer amount, String currencyId, UserEntity user) {
+    public void receive(Long amount, String currencyId, UserEntity user) {
         CurrencyDictEntity currency = currencyDictRepo.findById(currencyId)
                 .orElseThrow(() -> new RuntimeException("No such currency"));
         receive(amount, currency, user);
     }
 
-    public void receive(Integer amount, CurrencyDictEntity currency, UserEntity user) {
+    public void receive(Long amount, CurrencyDictEntity currency, UserEntity user) {
         UserCurrencyEntity entity = user.getWallet().stream()
                 .filter(it -> it.getCurrency().getId().contentEquals(currency.getId()))
-                .findFirst().orElse(new UserCurrencyEntity(new UserCurrencyEntityId(user.getId(), null), currency, 0));
+                .findFirst().orElse(new UserCurrencyEntity(
+                        new UserCurrencyEntityId(user.getId(), null),
+                        currency,
+                        0L));
 
         entity.setAmount(entity.getAmount() + amount);
         user.getWallet().add(entity);
@@ -49,7 +52,7 @@ public class WalletService {
     }
 
     @Transactional
-    public void sell(Integer amount, String currencyId, UserEntity user) {
+    public void sell(Long amount, String currencyId, UserEntity user) {
         if (currencyId.equals(CASH_ID)) throw new RuntimeException("Can't sell cash");
 
         UserCurrencyEntity sold = user.getWallet().stream()

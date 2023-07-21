@@ -2,12 +2,17 @@ package com.gitlab.juli220620.facades;
 
 import com.gitlab.juli220620.dao.entity.RoomFlowerEntity;
 import com.gitlab.juli220620.dao.entity.UserEntity;
+import com.gitlab.juli220620.dao.entity.UserGameSystemEntity;
 import com.gitlab.juli220620.dao.entity.UserRoomEntity;
 import com.gitlab.juli220620.dao.repo.RoomFlowerRepo;
 import com.gitlab.juli220620.dao.repo.UserRoomRepo;
-import com.gitlab.juli220620.service.*;
+import com.gitlab.juli220620.service.LoginService;
+import com.gitlab.juli220620.service.PlantingService;
+import com.gitlab.juli220620.service.TendingService;
+import com.gitlab.juli220620.service.WalletService;
 import com.gitlab.juli220620.service.harvest.HarvestService;
 import com.gitlab.juli220620.service.systems.PerennialFlowersGameSystem;
+import com.gitlab.juli220620.service.systems.TimeSkipGameSystem;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,6 +24,7 @@ import java.util.function.Function;
 import static com.gitlab.juli220620.dao.entity.CurrencyDictEntity.*;
 import static com.gitlab.juli220620.service.TendingService.NUTRIENT_UNIT_COST;
 import static com.gitlab.juli220620.service.TendingService.WATER_UNIT_COST;
+import static com.gitlab.juli220620.service.systems.TimeSkipGameSystem.TIME_SKIP_SYSTEM_ID;
 
 @Service
 @RequiredArgsConstructor
@@ -34,6 +40,7 @@ public class RoomFacade {
     private final RoomFlowerRepo roomFlowerRepo;
 
     private final PerennialFlowersGameSystem perennialFlowersGameSystem;
+    private final TimeSkipGameSystem timeSkipGameSystem;
 
     @Transactional
     public RoomFlowerEntity plantFlower(String token, String baseFlowerId, String potId, Integer cycles, Long roomId) {
@@ -46,8 +53,8 @@ public class RoomFacade {
 
         RoomFlowerEntity entity = plantingService.plantFlower(baseFlowerId, potId, cycles, room);
 
-        int amount = entity.getBaseFlower().getPrice() + entity.getBasePot().getPrice();
-        int correctedAmount = perennialFlowersGameSystem.modifyPrice(amount, entity);
+        long amount = entity.getBaseFlower().getPrice() + entity.getBasePot().getPrice();
+        long correctedAmount = perennialFlowersGameSystem.modifyPrice(amount, entity);
 
         if (!walletService.spend(correctedAmount, CASH_ID, user))
             throw new RuntimeException("Insufficient funds");
@@ -67,13 +74,9 @@ public class RoomFacade {
 
     @Transactional
     public void harvestFlower(String token, Long flowerId) {
-        RoomFlowerEntity entity = roomFlowerRepo.findById(flowerId)
-                .orElseThrow(() -> new RuntimeException("Invalid flower"));
+        RoomFlowerEntity entity = validateUserFlower(token, flowerId);
 
-        if (!loginService.checkUserToken(token, entity.getRoom().getUser()))
-            throw new RuntimeException("Wrong flower");
-
-        Map<String, Integer> harvest = harvestService.harvest(entity);
+        Map<String, Long> harvest = harvestService.harvest(entity);
 
         harvest.forEach((currencyId, amount) ->
                 walletService.receive(amount, currencyId, entity.getRoom().getUser()));
@@ -88,20 +91,43 @@ public class RoomFacade {
         return room;
     }
 
+    @Transactional
+    public void skipTime(String token, Long flowerId, Long ticksToSkip) {
+        RoomFlowerEntity entity = validateUserFlower(token, flowerId);
+        UserEntity user = entity.getRoom().getUser();
+
+        UserGameSystemEntity userGameSystemEntity = user.getWorkingSystems().stream()
+                .filter(it -> it.getId().getSystemId().contentEquals(TIME_SKIP_SYSTEM_ID)).findFirst()
+                .orElseThrow(() -> new RuntimeException("No time skipping for you!"));
+
+        long price = timeSkipGameSystem.calculatePrice(userGameSystemEntity, ticksToSkip);
+
+        if (!walletService.spend(price, DELORIAN_ID, user))
+            throw new RuntimeException("You're not ready to time travel this far");
+
+        timeSkipGameSystem.skipTime(entity, ticksToSkip);
+    }
+
     private void tendFlower(String token, Long flowerId,
                             Integer unitCost, String currencyId,
                             Function<RoomFlowerEntity, Integer> strategy) {
+        RoomFlowerEntity entity = validateUserFlower(token, flowerId);
+
+        Integer resultingAmount = strategy.apply(entity);
+
+        if (resultingAmount == 0) return;
+
+        if (!walletService.spend((long) resultingAmount * unitCost, currencyId, entity.getRoom().getUser()))
+            throw new RuntimeException("Insufficient funds");
+    }
+
+    private RoomFlowerEntity validateUserFlower(String token, Long flowerId) {
         RoomFlowerEntity entity = roomFlowerRepo.findById(flowerId)
                 .orElseThrow(() -> new RuntimeException("Invalid flower"));
 
         if (!loginService.checkUserToken(token, entity.getRoom().getUser()))
             throw new RuntimeException("Access denied");
 
-        Integer resultingAmount = strategy.apply(entity);
-
-        if (resultingAmount == 0) return;
-
-        if (!walletService.spend(resultingAmount * unitCost, currencyId, entity.getRoom().getUser()))
-            throw new RuntimeException("Insufficient funds");
+        return entity;
     }
 }

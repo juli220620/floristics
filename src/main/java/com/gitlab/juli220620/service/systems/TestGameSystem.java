@@ -10,10 +10,10 @@ public class TestGameSystem implements GameSystem {
     public static final String ID = "TEST_SYSTEM";
 
     @Override
-    public Map<Integer, Map<String, Integer>> getCost() {
+    public Map<Integer, Map<String, Long>> getCost() {
         return Map.of(
-                1, Map.of(CurrencyDictEntity.RED_ID, 100),
-                2, Map.of(CurrencyDictEntity.RED_ID, 500)
+                1, Map.of(CurrencyDictEntity.RED_ID, 100L),
+                2, Map.of(CurrencyDictEntity.RED_ID, 500L)
         );
     }
 

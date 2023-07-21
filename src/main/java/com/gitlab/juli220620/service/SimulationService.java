@@ -25,18 +25,16 @@ public class SimulationService {
     public void update() {
         List<RoomFlowerEntity> flowers = flowerRepo.findAll().stream()
                 .filter(it -> !it.getStatus().equals(DEAD_STATUS))
-                .peek(this::updateFlower)
+                .peek(it -> {
+                    LocalDateTime now = now();
+                    updateFlower(it, countNaturalUpdateTicks(it, now), now);
+                })
                 .collect(Collectors.toList());
 
         flowerRepo.saveAll(flowers);
     }
 
-    private void updateFlower(RoomFlowerEntity flower) {
-        LocalDateTime now = now();
-        long oldGrowthTicks = calculateTicks(flower.getPlanted(), flower.getUpdated());
-        long newGrowthTicks = calculateTicks(flower.getPlanted(), now);
-        long ticksToAdd = Math.max(0, newGrowthTicks - oldGrowthTicks);
-
+    public void updateFlower(RoomFlowerEntity flower, long ticksToAdd, LocalDateTime now) {
         int consumedWater = (int) (flower.getBaseFlower().getWaterConsumption() * ticksToAdd);
         int consumedNutrient = (int) (flower.getBaseFlower().getNutrientConsumption() * ticksToAdd);
 
@@ -55,7 +53,9 @@ public class SimulationService {
             flower.setWater(flower.getWater() - consumedWater);
             flower.setNutrient(flower.getNutrient() - consumedNutrient);
         } else {
-            flower.setDeathTicks(flower.getDeathTicks() + ticksToAdd);
+            long growthBeforeDeath = calculateFlowerMaxGrowth(flower);
+            flower.setGrowth(growthBeforeDeath);
+            flower.setDeathTicks(flower.getDeathTicks() + (ticksToAdd - growthBeforeDeath));
             flower.setWater(Math.max(0, flower.getWater() - consumedWater));
             flower.setNutrient(Math.max(0, flower.getNutrient() - consumedNutrient));
         }
@@ -71,9 +71,21 @@ public class SimulationService {
         flower.setUpdated(now);
     }
 
+    private long countNaturalUpdateTicks(RoomFlowerEntity flower, LocalDateTime now) {
+        long oldGrowthTicks = calculateTicks(flower.getPlanted(), flower.getUpdated());
+        long newGrowthTicks = calculateTicks(flower.getPlanted(), now);
+        return Math.max(0, newGrowthTicks - oldGrowthTicks);
+    }
+
     private long calculateTicks(LocalDateTime past, LocalDateTime present) {
         long secondsPassed = ChronoUnit.SECONDS.between(past, present);
         return secondsPassed / SECONDS_IN_TICK;
+    }
+
+    private long calculateFlowerMaxGrowth(RoomFlowerEntity flower) {
+        long growthOnWater = flower.getWater() / flower.getBaseFlower().getWaterConsumption();
+        long growthOnNutrients = flower.getNutrient() / flower.getBaseFlower().getNutrientConsumption();
+        return Math.min(growthOnWater, growthOnNutrients);
     }
 
     static LocalDateTime now() {

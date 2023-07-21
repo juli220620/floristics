@@ -21,7 +21,7 @@ public class DeadHarvestStrategy implements HarvestStrategy {
     private final PotCashbackGameSystem potCashbackGameSystem;
 
     @Override
-    public Map<String, Integer> process(RoomFlowerEntity flower) {
+    public Map<String, Long> process(RoomFlowerEntity flower) {
         potCashbackGameSystem.cashback(flower.getRoom().getUser(), flower.getBasePot());
         roomFlowerRepo.customDelete(flower.getId());
         return Collections.emptyMap();

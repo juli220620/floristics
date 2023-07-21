@@ -7,7 +7,7 @@ import java.util.Map;
 
 public class DefaultHarvestStrategy implements HarvestStrategy {
     @Override
-    public Map<String, Integer> process(RoomFlowerEntity flower) {
+    public Map<String, Long> process(RoomFlowerEntity flower) {
         return Collections.emptyMap();
     }
 

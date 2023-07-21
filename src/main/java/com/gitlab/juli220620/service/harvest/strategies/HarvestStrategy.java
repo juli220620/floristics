@@ -6,7 +6,7 @@ import java.util.Map;
 
 public interface HarvestStrategy {
 
-    Map<String, Integer> process(RoomFlowerEntity flower);
+    Map<String, Long> process(RoomFlowerEntity flower);
 
     StrategyKey getKey();
 }

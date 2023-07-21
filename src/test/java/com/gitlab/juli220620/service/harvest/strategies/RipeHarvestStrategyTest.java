@@ -66,7 +66,7 @@ class RipeHarvestStrategyTest {
             "300,20,"+CURRENCY1_ID+",SOMETHING_ELSE",
             "100,20,SOMETHING_SOMETHING,SOMETHING_ELSE",
     })
-    public void process_whenWithoutOffspringChance_flowerDeleted(int curr1, int curr2, String id1, String id2) {
+    public void process_whenWithoutOffspringChance_flowerDeleted(long curr1, long curr2, String id1, String id2) {
         createBonuses(id1, id2);
         checkRes(curr1, curr2);
         Mockito.verify(roomFlowerRepo, Mockito.times(1)).customDelete(FLOWER_ID);
@@ -89,8 +89,8 @@ class RipeHarvestStrategyTest {
         Mockito.verify(roomFlowerRepo, Mockito.times(0)).customDelete(FLOWER_ID);
     }
 
-    private void checkRes(Integer curr1, Integer curr2) {
-        Map<String, Integer> results = strategy.process(flower);
+    private void checkRes(Long curr1, Long curr2) {
+        Map<String, Long> results = strategy.process(flower);
 
         assertEquals(2, results.size());
         assertTrue(results.containsKey(CURRENCY1_ID));

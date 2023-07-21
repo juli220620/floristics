@@ -31,7 +31,7 @@ public class BaseFlowerDictEntity {
             joinColumns = {@JoinColumn(name = "flower_id", referencedColumnName = "id")})
     @MapKeyColumn(name = "currency_id")
     @Column(name = "amount")
-    private Map<String, Integer> harvest;
+    private Map<String, Long> harvest;
 
     @OneToMany(mappedBy = "baseFlower")
     private List<HarvestBonusEntity> harvestBonuses;

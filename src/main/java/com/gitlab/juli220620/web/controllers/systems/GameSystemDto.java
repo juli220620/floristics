@@ -20,7 +20,7 @@ public class GameSystemDto {
 
     private String id;
     private String name;
-    private Map<Integer, Map<String, Integer>> levelCosts;
+    private Map<Integer, Map<String, Long>> levelCosts;
 
     public GameSystemDto(GameSystemEntity system, GameSystemService service) {
         this.id = system.getId();

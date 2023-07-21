@@ -1,4 +1,4 @@
-package com.gitlab.juli220620.web.controllers.user;
+package com.gitlab.juli220620.web.controllers.room;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,8 +9,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class SellCurrencyRq {
-
-    private Long amount;
-    private String currencyId;
+public class SkipTimeRq {
+    private Long flowerId;
+    private Long ticksToSkip;
 }

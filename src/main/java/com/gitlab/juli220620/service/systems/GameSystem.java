@@ -4,7 +4,7 @@ import java.util.Map;
 
 public interface GameSystem {
 
-    Map<Integer, Map<String, Integer>> getCost();
+    Map<Integer, Map<String, Long>> getCost();
 
     String getId();
 }

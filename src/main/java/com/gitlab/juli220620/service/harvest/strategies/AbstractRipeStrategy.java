@@ -15,9 +15,9 @@ public abstract class AbstractRipeStrategy implements HarvestStrategy {
     protected final HarvestBonusService harvestBonusService;
     protected final AchievementService achievementService;
 
-    public Map<String, Integer> process(RoomFlowerEntity flower) {
+    public Map<String, Long> process(RoomFlowerEntity flower) {
 
-        Map<String, Integer> harvest = new HashMap<>(flower.getBaseFlower().getHarvest());
+        Map<String, Long> harvest = new HashMap<>(flower.getBaseFlower().getHarvest());
 
         achievementService.processMaminSadovod(flower.getRoom().getUser(), flower.getBaseFlower());
 
@@ -29,10 +29,10 @@ public abstract class AbstractRipeStrategy implements HarvestStrategy {
         bonuses.forEach((key, bonus) -> {
             if (!harvest.containsKey(key)) return;
 
-            Integer baseHarvest = harvest.get(key);
+            Long baseHarvest = harvest.get(key);
             if (baseHarvest == null) return;
 
-            Integer modifiedHarvest = (int) (baseHarvest * bonus.getMultiplier()) + bonus.getFlatBonus();
+            Long modifiedHarvest = (long) (baseHarvest * bonus.getMultiplier()) + bonus.getFlatBonus();
             harvest.put(key, modifiedHarvest);
         });
 

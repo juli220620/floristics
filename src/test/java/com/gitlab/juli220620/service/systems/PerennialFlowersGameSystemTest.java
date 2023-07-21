@@ -90,22 +90,22 @@ class PerennialFlowersGameSystemTest {
     @Test
     public void modifyPrice_whenCorrectValues_happyPass() {
         flower.setCycles(2);
-        assertEquals(102, perennialFlowersGameSystem.modifyPrice(100, flower));
+        assertEquals(102, perennialFlowersGameSystem.modifyPrice(100L, flower));
     }
 
     @Test
     public void modifyPrice_whenFlowerNull_amountUnchanged() {
-        assertEquals(100, perennialFlowersGameSystem.modifyPrice(100, null));
+        assertEquals(100, perennialFlowersGameSystem.modifyPrice(100L, null));
     }
 
     @Test
     public void modifyPrice_whenCyclesNull_amountUnchanged() {
-        assertEquals(100, perennialFlowersGameSystem.modifyPrice(100, flower));
+        assertEquals(100, perennialFlowersGameSystem.modifyPrice(100L, flower));
     }
 
     @Test
     public void modifyPrice_whenInvalidCycles_amountUnchanged() {
         flower.setCycles(1);
-        assertEquals(100, perennialFlowersGameSystem.modifyPrice(100, flower));
+        assertEquals(100, perennialFlowersGameSystem.modifyPrice(100L, flower));
     }
 }

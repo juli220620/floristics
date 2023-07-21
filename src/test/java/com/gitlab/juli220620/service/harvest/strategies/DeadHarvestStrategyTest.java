@@ -37,7 +37,7 @@ class DeadHarvestStrategyTest {
         Mockito.doReturn(flowerId).when(mockFlower).getId();
         Mockito.doReturn(Mockito.mock(UserRoomEntity.class)).when(mockFlower).getRoom();
 
-        Map<String, Integer> result = deadHarvestStrategy.process(mockFlower);
+        Map<String, Long> result = deadHarvestStrategy.process(mockFlower);
 
         assertEquals(0, result.size());
 

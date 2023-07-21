@@ -25,5 +25,5 @@ public class UserCurrencyEntity {
     @JoinColumn(name = "currency_id", referencedColumnName = "id")
     private CurrencyDictEntity currency;
 
-    private Integer amount;
+    private Long amount;
 }

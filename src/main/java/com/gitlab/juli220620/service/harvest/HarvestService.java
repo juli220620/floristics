@@ -12,7 +12,7 @@ public class HarvestService {
 
     private final HarvestStrategyFactory strategyFactory;
 
-    public Map<String, Integer> harvest(RoomFlowerEntity flower) {
+    public Map<String, Long> harvest(RoomFlowerEntity flower) {
         return strategyFactory
                 .getHarvestStrategy(flower)
                 .process(flower);

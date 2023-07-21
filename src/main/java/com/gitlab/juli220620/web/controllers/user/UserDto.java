@@ -18,7 +18,7 @@ public class UserDto {
 
     private String username;
     private Long id;
-    private Map<String, Integer> wallet;
+    private Map<String, Long> wallet;
 
     public UserDto(UserEntity entity) {
         username = entity.getUsername();

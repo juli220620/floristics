@@ -25,7 +25,7 @@ public class BaseFlowerDto {
     private Integer price;
     private Integer maxCycles;
 
-    private Map<String, Integer> harvest;
+    private Map<String, Long> harvest;
 
     private List<HarvestBonusDto> harvestBonuses;
 

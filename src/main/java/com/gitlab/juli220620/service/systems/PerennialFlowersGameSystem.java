@@ -14,7 +14,7 @@ public class PerennialFlowersGameSystem implements GameSystem {
 
     public static final String ID = "PERENNIAL_FLOWERS";
 
-    public static final Map<Integer, Integer> maxCycles = Map.of(
+    public static final Map<Integer, Integer> MAX_CYCLES = Map.of(
             1, 2,
             2, 3,
             3, 4);
@@ -25,7 +25,7 @@ public class PerennialFlowersGameSystem implements GameSystem {
                 .filter(it -> it.getId().getSystemId().contentEquals(ID))
                 .findFirst().orElseThrow(() -> new RuntimeException("You can't do that."));
 
-        if (cycles > maxCycles.get(perennialFlower.getSystemLevel()) ||
+        if (cycles > MAX_CYCLES.get(perennialFlower.getSystemLevel()) ||
                 cycles > flower.getBaseFlower().getMaxCycles())
             throw new RuntimeException("Too many cycles");
 
@@ -33,17 +33,17 @@ public class PerennialFlowersGameSystem implements GameSystem {
         flower.setCurrentCycle(1);
     }
 
-    public Integer modifyPrice(Integer amount, RoomFlowerEntity flower) {
+    public Long modifyPrice(Long amount, RoomFlowerEntity flower) {
         if (flower == null || flower.getCycles() == null || flower.getCycles() <= 1) return amount;
-        return (int) (amount + amount*(0.01 * flower.getCycles()));
+        return (long) (amount + amount*(0.01 * flower.getCycles()));
     }
 
     @Override
-    public Map<Integer, Map<String, Integer>> getCost() {
+    public Map<Integer, Map<String, Long>> getCost() {
         return Map.of(
-                1, Map.of(RED_ID, 20000),
-                2, Map.of(RED_ID, 50000),
-                3, Map.of(RED_ID, 100000)
+                1, Map.of(RED_ID, 20000L),
+                2, Map.of(RED_ID, 50000L),
+                3, Map.of(RED_ID, 100000L)
         );
     }
 

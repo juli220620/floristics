@@ -20,6 +20,4 @@ public class GameSystemEntity {
     private String id;
 
     private String name;
-
-
 }

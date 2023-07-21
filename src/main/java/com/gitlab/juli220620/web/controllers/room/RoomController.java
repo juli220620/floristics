@@ -56,6 +56,16 @@ public class RoomController {
         });
     }
 
+    @PostMapping("/skip")
+    public ResponseEntity<Object> skipTime(@PathVariable Long roomId,
+                                           @RequestBody SkipTimeRq rq,
+                                           HttpServletRequest http) {
+        return authUtils.authorized(http, token -> {
+                roomFacade.skipTime(token, rq.getFlowerId(), rq.getTicksToSkip());
+                return null;
+        });
+    }
+
     @GetMapping
     public ResponseEntity<RoomStateDto> getRoomState(@PathVariable Long roomId,
                                                      HttpServletRequest http) {
