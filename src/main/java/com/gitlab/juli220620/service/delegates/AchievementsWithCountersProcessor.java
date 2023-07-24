@@ -25,7 +25,7 @@ public class AchievementsWithCountersProcessor {
     public void processAchievementWithCounter(UserEntity user,
                                               BaseFlowerDictEntity baseFlower,
                                               String achievementId,
-                                              int counter) {
+                                              long counter) {
         if (baseFlower.getPrice() <= 0) return;
 
         UserAchievementEntity userAchievement = user.getAchievements().stream()
@@ -63,6 +63,6 @@ public class AchievementsWithCountersProcessor {
 
     @Data
     private static class CounterMeta {
-        private int count = 0;
+        private long count = 0L;
     }
 }

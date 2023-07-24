@@ -51,7 +51,7 @@ class RipeHarvestStrategyTest {
         BaseFlowerDictEntity baseFlower = Mockito.mock(BaseFlowerDictEntity.class);
 
         Mockito.doReturn(FLOWER_ID).when(flower).getId();
-        Map<String, Integer> harvest = Map.of(CURRENCY1_ID, 100, CURRENCY2_ID, 20);
+        Map<String, Long> harvest = Map.of(CURRENCY1_ID, 100L, CURRENCY2_ID, 20L);
         Mockito.doReturn(room).when(flower).getRoom();
         Mockito.doReturn(user).when(room).getUser();
         Mockito.doReturn(harvest).when(baseFlower).getHarvest();
