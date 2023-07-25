@@ -25,9 +25,7 @@ class TimeSkipGameSystemTest {
     @BeforeEach
     public void setup() {
         timeSkipGameSystem = new TimeSkipGameSystem(
-                new SimulationService(Mockito.mock(RoomFlowerRepo.class),
-                        Mockito.mock(AutoHarvestGameSystem.class)
-                )
+                new SimulationService(Mockito.mock(RoomFlowerRepo.class))
         );
 
         BaseFlowerDictEntity baseFlower = Mockito.mock(BaseFlowerDictEntity.class);

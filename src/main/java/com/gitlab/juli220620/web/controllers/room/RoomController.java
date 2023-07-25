@@ -21,7 +21,14 @@ public class RoomController {
                                         @PathVariable Long roomId,
                                         HttpServletRequest http) {
         return authUtils.authorized(http, token -> {
-            roomFacade.plantFlower(token, rq.getBaseFlowerId(), rq.getPotId(), rq.getCycles(), rq.isAutoHarvest(), roomId);
+            roomFacade.plantFlower(token,
+                    rq.getBaseFlowerId(),
+                    rq.getPotId(),
+                    rq.getCycles(),
+                    rq.isAutoHarvest(),
+                    rq.isNeedFilling(),
+                    roomId
+            );
             return null;
         });
     }

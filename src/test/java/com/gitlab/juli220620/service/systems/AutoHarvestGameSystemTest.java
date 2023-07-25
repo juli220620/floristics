@@ -16,6 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -52,6 +53,19 @@ class AutoHarvestGameSystemTest {
 
         flower.setBaseFlower(baseFlower);
         flower.setRoom(room);
+
+        Arrays.stream(AutoHarvestGameSystem.class.getDeclaredFields())
+                .filter(it -> it.getName().contentEquals("roomFacade"))
+                .findFirst()
+                .ifPresent(field -> {
+                    try {
+                        field.setAccessible(true);
+                        field.set(autoHarvestGameSystem, roomFacade);
+                        field.setAccessible(false);
+                    } catch (IllegalAccessException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
     }
 
     @Test

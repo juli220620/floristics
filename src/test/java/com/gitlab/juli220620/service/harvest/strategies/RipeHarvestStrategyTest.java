@@ -60,7 +60,6 @@ class RipeHarvestStrategyTest {
         flower.setRoom(room);
         Mockito.doReturn(user).when(room).getUser();
         Mockito.doReturn(harvest).when(baseFlower).getHarvest();
-        Mockito.doReturn(1).when(baseFlower).getPrice();
         flower.setBaseFlower(baseFlower);
     }
 

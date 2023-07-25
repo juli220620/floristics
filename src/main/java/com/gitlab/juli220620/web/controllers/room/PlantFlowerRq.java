@@ -14,6 +14,6 @@ public class PlantFlowerRq {
     private String baseFlowerId;
     private String potId;
     private Integer cycles;
-
+    private boolean needFilling;
     private boolean autoHarvest;
 }

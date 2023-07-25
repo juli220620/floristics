@@ -11,6 +11,7 @@ import com.gitlab.juli220620.service.PlantingService;
 import com.gitlab.juli220620.service.TendingService;
 import com.gitlab.juli220620.service.WalletService;
 import com.gitlab.juli220620.service.harvest.HarvestService;
+import com.gitlab.juli220620.service.systems.FillThePotGameSystem;
 import com.gitlab.juli220620.service.systems.AutoHarvestGameSystem;
 import com.gitlab.juli220620.service.systems.PerennialFlowersGameSystem;
 import com.gitlab.juli220620.service.systems.TimeSkipGameSystem;
@@ -18,12 +19,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
 
 import static com.gitlab.juli220620.dao.entity.CurrencyDictEntity.*;
 import static com.gitlab.juli220620.service.TendingService.NUTRIENT_UNIT_COST;
 import static com.gitlab.juli220620.service.TendingService.WATER_UNIT_COST;
+import static com.gitlab.juli220620.service.systems.FillThePotGameSystem.FILL_THE_POT_SYSTEM_ID;
 import static com.gitlab.juli220620.service.systems.TimeSkipGameSystem.TIME_SKIP_SYSTEM_ID;
 
 @Service
@@ -41,6 +44,7 @@ public class RoomFacade {
 
     private final PerennialFlowersGameSystem perennialFlowersGameSystem;
     private final TimeSkipGameSystem timeSkipGameSystem;
+    private final FillThePotGameSystem fillThePotGameSystem;
     private final AutoHarvestGameSystem autoHarvestGameSystem;
 
     @Transactional
@@ -50,6 +54,7 @@ public class RoomFacade {
             String potId, 
             Integer cycles, 
             boolean autoHarvest,
+            boolean needFilling,
             Long roomId
     ) {
         UserRoomEntity room = roomRepo.findById(roomId)
@@ -66,6 +71,14 @@ public class RoomFacade {
 
         if (!walletService.spend(correctedAmount, CASH_ID, user))
             throw new RuntimeException("Insufficient funds");
+
+        if (needFilling && hasWorkingSystem(user)) {
+            Map<String, Integer> filling = fillThePotGameSystem.getFillingAmount(entity);
+            if (walletService.spend((long) filling.get(BLUE_ID) * WATER_UNIT_COST, BLUE_ID, user)
+                    && walletService.spend((long) filling.get(GREEN_ID) * NUTRIENT_UNIT_COST, GREEN_ID, user)) {
+                fillThePotGameSystem.fillThePot(entity, filling.get(BLUE_ID), filling.get(GREEN_ID));
+            }
+        }
         
         if (autoHarvest) autoHarvestGameSystem.processAutoHarvest(user, entity);
             
@@ -141,5 +154,10 @@ public class RoomFacade {
             throw new RuntimeException("Access denied");
 
         return entity;
+    }
+
+    private boolean hasWorkingSystem(UserEntity user) {
+        return user.getWorkingSystems().stream()
+                .anyMatch(it -> it.getId().getSystemId().contentEquals(FILL_THE_POT_SYSTEM_ID));
     }
 }
