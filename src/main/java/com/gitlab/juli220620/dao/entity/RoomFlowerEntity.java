@@ -29,6 +29,7 @@ public class RoomFlowerEntity {
     private Long deathTicks;
     private Integer currentCycle;
     private Integer cycles;
+    private boolean autoHarvest;
 
     @Id
     @GeneratedValue(strategy = IDENTITY)

@@ -30,6 +30,7 @@ public class FlowerStateDto {
     private String planted;
     private Integer currentCycle;
     private Integer cycles;
+    private boolean autoHarvest;
 
     public FlowerStateDto(RoomFlowerEntity flower) {
         id = flower.getId();
@@ -47,5 +48,6 @@ public class FlowerStateDto {
         planted = flower.getPlanted().format(formatter);
         currentCycle = flower.getCurrentCycle();
         cycles = flower.getCycles();
+        autoHarvest = flower.isAutoHarvest();
     }
 }

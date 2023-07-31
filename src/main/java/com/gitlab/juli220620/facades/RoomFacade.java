@@ -11,13 +11,13 @@ import com.gitlab.juli220620.service.PlantingService;
 import com.gitlab.juli220620.service.TendingService;
 import com.gitlab.juli220620.service.WalletService;
 import com.gitlab.juli220620.service.harvest.HarvestService;
+import com.gitlab.juli220620.service.systems.AutoHarvestGameSystem;
 import com.gitlab.juli220620.service.systems.PerennialFlowersGameSystem;
 import com.gitlab.juli220620.service.systems.TimeSkipGameSystem;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
 
@@ -41,9 +41,17 @@ public class RoomFacade {
 
     private final PerennialFlowersGameSystem perennialFlowersGameSystem;
     private final TimeSkipGameSystem timeSkipGameSystem;
+    private final AutoHarvestGameSystem autoHarvestGameSystem;
 
     @Transactional
-    public RoomFlowerEntity plantFlower(String token, String baseFlowerId, String potId, Integer cycles, Long roomId) {
+    public RoomFlowerEntity plantFlower(
+            String token, 
+            String baseFlowerId, 
+            String potId, 
+            Integer cycles, 
+            boolean autoHarvest,
+            Long roomId
+    ) {
         UserRoomEntity room = roomRepo.findById(roomId)
                 .orElseThrow(() -> new RuntimeException("No such room"));
 
@@ -58,7 +66,9 @@ public class RoomFacade {
 
         if (!walletService.spend(correctedAmount, CASH_ID, user))
             throw new RuntimeException("Insufficient funds");
-
+        
+        if (autoHarvest) autoHarvestGameSystem.processAutoHarvest(user, entity);
+            
         return entity;
     }
 
@@ -75,11 +85,13 @@ public class RoomFacade {
     @Transactional
     public void harvestFlower(String token, Long flowerId) {
         RoomFlowerEntity entity = validateUserFlower(token, flowerId);
+        harvestFlower(entity.getRoom().getUser(), entity);
+    }
 
-        Map<String, Long> harvest = harvestService.harvest(entity);
-
-        harvest.forEach((currencyId, amount) ->
-                walletService.receive(amount, currencyId, entity.getRoom().getUser()));
+    @Transactional
+    public void harvestFlower(UserEntity user, RoomFlowerEntity flower) {
+        harvestService.harvest(flower).forEach((currencyId, amount) ->
+                walletService.receive(amount, currencyId, user));
     }
 
     public UserRoomEntity getRoom(Long roomId, String token) {

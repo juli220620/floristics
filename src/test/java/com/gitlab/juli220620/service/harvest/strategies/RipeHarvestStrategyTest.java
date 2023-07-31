@@ -20,6 +20,7 @@ import org.mockito.quality.Strictness;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import static com.gitlab.juli220620.service.SimulationService.GROWING_STATUS;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -34,7 +35,7 @@ class RipeHarvestStrategyTest {
 
     @Spy
     @InjectMocks
-    RipeHarvestStrategy strategy;
+    private RipeHarvestStrategy strategy;
     @Spy
     private RoomFlowerEntity flower;
     @Mock
@@ -42,21 +43,24 @@ class RipeHarvestStrategyTest {
     @Mock
     private AchievementService achievementService;
     @Mock
-    RoomFlowerRepo roomFlowerRepo;
+    private RoomFlowerRepo roomFlowerRepo;
     @Mock
-    HarvestBonusService bonusService;
+    private HarvestBonusService bonusService;
+    @Mock
+    private BaseFlowerDictEntity baseFlower;
+    @Mock
+    private UserEntity user;
 
     @BeforeEach
     public void setup() {
-        UserEntity user = Mockito.mock(UserEntity.class);
         UserRoomEntity room = Mockito.mock(UserRoomEntity.class);
-        BaseFlowerDictEntity baseFlower = Mockito.mock(BaseFlowerDictEntity.class);
 
         flower.setId(FLOWER_ID);
-        Map<String, Integer> harvest = Map.of(CURRENCY1_ID, 100, CURRENCY2_ID, 20);
+        Map<String, Long> harvest = Map.of(CURRENCY1_ID, 100L, CURRENCY2_ID, 20L);
         flower.setRoom(room);
         Mockito.doReturn(user).when(room).getUser();
         Mockito.doReturn(harvest).when(baseFlower).getHarvest();
+        Mockito.doReturn(1).when(baseFlower).getPrice();
         flower.setBaseFlower(baseFlower);
     }
 
@@ -74,9 +78,9 @@ class RipeHarvestStrategyTest {
 
     @Test
     public void postProcess_whenChanceForOffspring_UpdatesEntity() {
-        Map<String, HarvestBonusEntity> bonuses = Map.of(CURRENCY1_ID, new HarvestBonusEntity(
-                null, null, null, 0.1, 2, 1.0));
-        Mockito.doReturn(bonuses).when(bonusService).getHarvestBonuses(Mockito.any(), Mockito.any());
+        HarvestBonusEntity bonus = new HarvestBonusEntity(
+                null, baseFlower, null, 0.1, 2, 1.0);
+        Mockito.doReturn(Optional.of(bonus)).when(bonusService).getMaxOffspringChance(flower);
         flower.setStatus("Something");
         flower.setGrowth(15L);
         flower.setDeathTicks(2L);

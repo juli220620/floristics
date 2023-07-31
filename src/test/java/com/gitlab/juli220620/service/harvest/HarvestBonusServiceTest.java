@@ -32,6 +32,7 @@ class HarvestBonusServiceTest {
     @BeforeEach
     public void setup() {
         Mockito.doReturn("ANY_GENERIC_STRING").when(baseFlower).getId();
+        Mockito.doReturn(1).when(baseFlower).getPrice();
     }
 
     @Test

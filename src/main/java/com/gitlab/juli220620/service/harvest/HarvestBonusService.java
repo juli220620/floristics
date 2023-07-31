@@ -42,7 +42,8 @@ public class HarvestBonusService {
     }
 
     private Stream<HarvestBonusEntity> getViableBonuses(BaseFlowerDictEntity baseFlower, UserEntity user) {
-        long flowerCount = user.getFlowerCount().get(baseFlower.getId());
+        if (baseFlower.getPrice() == 0) return Stream.of();
+        long flowerCount = Optional.ofNullable(user.getFlowerCount().get(baseFlower.getId())).orElse(0L);
         return baseFlower.getHarvestBonuses().stream()
                 .filter(it -> it.getId().getCount() <= flowerCount);
     }

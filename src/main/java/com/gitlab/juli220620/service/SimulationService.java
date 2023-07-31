@@ -2,9 +2,14 @@ package com.gitlab.juli220620.service;
 
 import com.gitlab.juli220620.dao.entity.RoomFlowerEntity;
 import com.gitlab.juli220620.dao.repo.RoomFlowerRepo;
+import com.gitlab.juli220620.service.systems.AutoHarvestGameSystem;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.Hibernate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -21,6 +26,11 @@ public class SimulationService {
 
     private final RoomFlowerRepo flowerRepo;
 
+    @Lazy
+    @Autowired
+    private AutoHarvestGameSystem autoHarvestGameSystem;
+
+    @Transactional
     @Scheduled(fixedRate = 60000)
     public void update() {
         List<RoomFlowerEntity> flowers = flowerRepo.findAll().stream()
@@ -69,6 +79,11 @@ public class SimulationService {
         if ((isGrowingStatus || isRipeStatus) && isTimeToDie) flower.setStatus(DEAD_STATUS);
 
         flower.setUpdated(now);
+
+        if (flower.getStatus().equals(RIPE_STATUS) && flower.isAutoHarvest()) {
+            Hibernate.initialize(flower.getBaseFlower().getHarvest());
+            autoHarvestGameSystem.autoHarvest(flower);
+        }
     }
 
     private long countNaturalUpdateTicks(RoomFlowerEntity flower, LocalDateTime now) {
