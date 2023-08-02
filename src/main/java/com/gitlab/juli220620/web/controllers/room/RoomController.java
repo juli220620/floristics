@@ -73,6 +73,14 @@ public class RoomController {
         });
     }
 
+    @PatchMapping("/enlarge")
+    public ResponseEntity<Object> enlargeRoom(@PathVariable Long roomId, HttpServletRequest http) {
+        return authUtils.authorized(http, token -> {
+            roomFacade.enlargeRoom(token, roomId);
+            return null;
+        });
+    }
+
     @GetMapping
     public ResponseEntity<RoomStateDto> getRoomState(@PathVariable Long roomId,
                                                      HttpServletRequest http) {

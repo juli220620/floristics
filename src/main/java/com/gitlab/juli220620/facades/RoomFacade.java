@@ -14,8 +14,11 @@ import com.gitlab.juli220620.service.harvest.HarvestService;
 import com.gitlab.juli220620.service.systems.FillThePotGameSystem;
 import com.gitlab.juli220620.service.systems.AutoHarvestGameSystem;
 import com.gitlab.juli220620.service.systems.PerennialFlowersGameSystem;
+import com.gitlab.juli220620.service.systems.RoomEnlargementSystem;
 import com.gitlab.juli220620.service.systems.TimeSkipGameSystem;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +29,7 @@ import java.util.function.Function;
 import static com.gitlab.juli220620.dao.entity.CurrencyDictEntity.*;
 import static com.gitlab.juli220620.service.TendingService.NUTRIENT_UNIT_COST;
 import static com.gitlab.juli220620.service.TendingService.WATER_UNIT_COST;
+import static com.gitlab.juli220620.service.systems.RoomEnlargementSystem.STONES_FOR_ROOM_ENLARGEMENT;
 import static com.gitlab.juli220620.service.systems.FillThePotGameSystem.FILL_THE_POT_SYSTEM_ID;
 import static com.gitlab.juli220620.service.systems.TimeSkipGameSystem.TIME_SKIP_SYSTEM_ID;
 
@@ -45,14 +49,19 @@ public class RoomFacade {
     private final PerennialFlowersGameSystem perennialFlowersGameSystem;
     private final TimeSkipGameSystem timeSkipGameSystem;
     private final FillThePotGameSystem fillThePotGameSystem;
-    private final AutoHarvestGameSystem autoHarvestGameSystem;
+    private final RoomEnlargementSystem roomEnlargementSystem;
+
+    @Lazy
+    @Autowired
+    private AutoHarvestGameSystem autoHarvestGameSystem;
+
 
     @Transactional
     public RoomFlowerEntity plantFlower(
-            String token, 
-            String baseFlowerId, 
-            String potId, 
-            Integer cycles, 
+            String token,
+            String baseFlowerId,
+            String potId,
+            Integer cycles,
             boolean autoHarvest,
             boolean needFilling,
             Long roomId
@@ -79,9 +88,9 @@ public class RoomFacade {
                 fillThePotGameSystem.fillThePot(entity, filling.get(BLUE_ID), filling.get(GREEN_ID));
             }
         }
-        
+
         if (autoHarvest) autoHarvestGameSystem.processAutoHarvest(user, entity);
-            
+
         return entity;
     }
 
@@ -131,6 +140,14 @@ public class RoomFacade {
             throw new RuntimeException("You're not ready to time travel this far");
 
         timeSkipGameSystem.skipTime(entity, ticksToSkip);
+    }
+
+    @Transactional
+    public void enlargeRoom(String token, Long roomId) {
+        UserRoomEntity room = getRoom(roomId, token);
+        if (!walletService.spend(STONES_FOR_ROOM_ENLARGEMENT, STONES_AND_BOARDS_ID, room.getUser()))
+            throw new RuntimeException("You don't have enough materials for that");
+        roomEnlargementSystem.enlargeRoom(room);
     }
 
     private void tendFlower(String token, Long flowerId,

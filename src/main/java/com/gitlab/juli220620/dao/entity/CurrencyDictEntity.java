@@ -21,6 +21,7 @@ public class CurrencyDictEntity {
     public static final String RED_ID = "RED";
     public static final String DELORIAN_ID = "DELORIAN";
     public static final String GEMSTONES_ID = "GEMSTONES";
+    public static final String STONES_AND_BOARDS_ID = "STONES_AND_BOARDS";
 
     @Id
     private String id;
