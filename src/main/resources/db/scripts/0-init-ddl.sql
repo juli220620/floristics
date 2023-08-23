@@ -1,6 +1,10 @@
 --liquibase formatted sql
 --changeset Yan:init-ddl failOnError:true
 
+create database floristics char set utf8mb4 COLLATE utf8mb4_0900_ai_ci;
+
+use floristics;
+
 create table achievement
 (
     id          varchar(256) not null

@@ -1,6 +1,8 @@
 --liquibase formatted sql
 --changeset Yan:init-dml failOnError:true
 
+use floristics;
+
 insert into floristics.achievement (id, name, description)
 values  ('BOLSHIE_NADEZHDY', 'Большие надежды', 'Десять — отличное число для старта.'),
         ('MAMIN_SADOVOD', 'Мамин садовод', 'Десять цветов? Ты молоец.');
