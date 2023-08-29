@@ -1,0 +1,5 @@
+FROM openjdk:17-alpine
+COPY release/floristics.jar app.jar
+COPY release/application.properties application.properties
+EXPOSE 8080
+ENTRYPOINT ["java","-jar","app.jar"]
