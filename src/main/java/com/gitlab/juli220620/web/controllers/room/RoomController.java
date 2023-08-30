@@ -87,4 +87,12 @@ public class RoomController {
         return authUtils.authorized(http, token ->
                 new RoomStateDto(roomFacade.getRoom(roomId, token)));
     }
+
+    @GetMapping("/{flowerId}")
+    public ResponseEntity<FlowerStateDto> getFlowerState(@PathVariable Long roomId,
+                                                         @PathVariable Long flowerId,
+                                                         HttpServletRequest http) {
+        return authUtils.authorized(http, token ->
+                new FlowerStateDto(roomFacade.getFlower(roomId, flowerId, token)));
+    }
 }

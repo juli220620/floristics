@@ -81,7 +81,7 @@ public class RoomFacade {
         if (!walletService.spend(correctedAmount, CASH_ID, user))
             throw new RuntimeException("Insufficient funds");
 
-        if (needFilling && hasWorkingSystem(user)) {
+        if (needFilling && hasWorkingSystem(user, FILL_THE_POT_SYSTEM_ID)) {
             Map<String, Integer> filling = fillThePotGameSystem.getFillingAmount(entity);
             if (walletService.spend((long) filling.get(BLUE_ID) * WATER_UNIT_COST, BLUE_ID, user)
                     && walletService.spend((long) filling.get(GREEN_ID) * NUTRIENT_UNIT_COST, GREEN_ID, user)) {
@@ -123,6 +123,14 @@ public class RoomFacade {
             throw new RuntimeException("That's not your room");
 
         return room;
+    }
+
+    public RoomFlowerEntity getFlower(Long roomId, Long flowerId, String token) {
+        UserRoomEntity room = getRoom(roomId, token);
+        return room.getFlowers().stream()
+                .filter(it -> it.getId().equals(flowerId))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("No such flower here"));
     }
 
     @Transactional
@@ -173,8 +181,8 @@ public class RoomFacade {
         return entity;
     }
 
-    private boolean hasWorkingSystem(UserEntity user) {
+    private boolean hasWorkingSystem(UserEntity user, String systemId) {
         return user.getWorkingSystems().stream()
-                .anyMatch(it -> it.getId().getSystemId().contentEquals(FILL_THE_POT_SYSTEM_ID));
+                .anyMatch(it -> it.getId().getSystemId().contentEquals(systemId));
     }
 }
